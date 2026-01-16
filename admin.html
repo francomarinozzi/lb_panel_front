@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Administración — La Blanquita del Barrio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#99682D',
+                        offwhite: '#F5F6F7',
+                        'muted-gray': '#EAEAEA'
+                    },
+                    fontFamily: {
+                        display: ['"Playfair Display"', 'serif'],
+                        body: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        .input-admin {
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .input-admin:focus {
+            border-color: #99682D !important;
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.9) !important;
+        }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #99682D;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+
+<body class="font-body bg-offwhite text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <section id="loginSection" class="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-offwhite/80 backdrop-blur-sm transition-all duration-300">
+        <div class="panel-crema w-full max-w-sm p-8 rounded-2xl shadow-2xl border border-black/5 relative overflow-hidden">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm mx-auto mb-4">
+                    <img src="assets/lb_logo.png" alt="Logo" class="w-full h-full object-contain p-1">
+                </div>
+                <h1 class="text-2xl font-display font-bold text-gray-900">Acceso Admin</h1>
+                <p class="text-sm text-gray-600">Ingresá tus credenciales</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Usuario</label>
+                    <input type="text" id="username" class="input-admin w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400" placeholder="admin">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Contraseña</label>
+                    <input type="password" id="password" class="input-admin w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400" placeholder="••••••">
+                </div>
+                <button type="submit" id="loginBtn" class="w-full bg-brand text-white font-medium py-3 rounded-xl shadow-lg hover:brightness-110 transition-all transform active:scale-95">
+                    Ingresar
+                </button>
+            </form>
+            <p id="loginError" class="text-red-500 text-xs text-center mt-3 hidden"></p>
+        </div>
+    </section>
+
+    <div id="adminPanel" class="hidden flex-col min-h-screen">
+        
+        <header class="sticky top-0 z-40 shadow-sm border-b border-black/5">
+            <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+                        <img src="assets/lb_logo.png" alt="Logo" class="w-full h-full object-contain p-0.5">
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-semibold leading-tight">Panel de Control</h1>
+                        <p class="text-xs text-gray-500">Gestión de Precios</p>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors">
+                    Cerrar sesión
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-6xl mx-auto px-6 py-10 w-full">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-3xl font-display mb-1">Productos</h2>
+                    <p class="text-sm text-gray-600">Administra el catálogo completo.</p>
+                </div>
+                <button onclick="openModal()" class="bg-brand text-white px-6 py-3 rounded-xl shadow hover:brightness-110 transition-all flex items-center gap-2 justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Nuevo Producto
+                </button>
+            </div>
+
+            <div class="panel-crema rounded-3xl border border-black/5 p-4 md:p-8 shadow-xl overflow-hidden relative">
+                <div class="mb-6 flex gap-4 items-center">
+                    <div class="relative group w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400 group-focus-within:text-brand transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input type="text" id="adminSearchInput" class="block w-full pl-10 pr-3 py-3 rounded-2xl leading-5 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brand sm:text-sm transition-all duration-200 shadow-sm" style="background-color: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.1);" placeholder="Buscar...">
+                    </div>
+                    <div id="loadingIndicator" class="hidden"><div class="loader"></div></div>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border border-black/5 hidden md:block">
+                    <table class="w-full table-fixed min-w-[700px]">
+                        <thead class="bg-black/5">
+                            <tr class="text-gray-600 text-sm">
+                                <th class="py-4 px-6 text-left uppercase tracking-wider font-medium">Producto</th>
+                                <th class="py-4 px-6 text-left uppercase tracking-wider font-medium w-40">Unidad</th>
+                                <th class="py-4 px-6 text-right uppercase tracking-wider font-medium w-32">Precio</th>
+                                <th class="py-4 px-6 text-center uppercase tracking-wider font-medium w-32">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody" class="divide-y divide-black/5">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div id="adminListMobile" class="md:hidden grid gap-3">
+                    </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="productModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
+            <div class="panel-crema rounded-2xl shadow-2xl border border-black/5 p-6 relative">
+                <h3 id="modalTitle" class="text-xl font-display font-bold mb-4 text-gray-900">Nuevo Producto</h3>
+                
+                <form id="productForm" class="space-y-4">
+                    <input type="hidden" id="productId"> 
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nombre del producto</label>
+                        <input type="text" id="prodName" required class="input-admin w-full px-4 py-2.5 rounded-xl text-gray-900">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Unidad</label>
+                            <input type="text" id="prodUnit" required list="units" class="input-admin w-full px-4 py-2.5 rounded-xl text-gray-900" placeholder="Ej: kg">
+                            <datalist id="units">
+                                <option value="kg">
+                                <option value="unidad">
+                                <option value="500g">
+                                <option value="Plancha">
+                                <option value="docena">
+                                <option value="caja">
+                            </datalist>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Precio ($)</label>
+                            <input type="number" id="prodPrice" required min="0" step="0.01" class="input-admin w-full px-4 py-2.5 rounded-xl text-gray-900">
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 mt-6 pt-2">
+                        <button type="button" onclick="closeModal()" class="flex-1 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-black/5 transition-colors">Cancelar</button>
+                        <button type="submit" id="saveBtn" class="flex-1 py-3 rounded-xl bg-brand text-white font-medium shadow-md hover:brightness-110 transition-all">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 1. CONFIGURACIÓN API
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        let currentProducts = [];
+
+        // Elementos DOM
+        const loginSection = document.getElementById('loginSection');
+        const adminPanel = document.getElementById('adminPanel');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        const tbody = document.getElementById('adminTableBody');
+        const mobileList = document.getElementById('adminListMobile');
+        const searchInput = document.getElementById('adminSearchInput');
+        const loader = document.getElementById('loadingIndicator');
+
+        // Modal Elements
+        const modal = document.getElementById('productModal');
+        const productForm = document.getElementById('productForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const productIdInput = document.getElementById('productId');
+
+        // --- VERIFICAR SESIÓN PREVIA ---
+        if (localStorage.getItem('lb_auth') === 'true') {
+            showAdminPanel();
+        }
+
+        function showAdminPanel() {
+            loginSection.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                loginSection.style.display = 'none';
+                adminPanel.classList.remove('hidden');
+                adminPanel.classList.add('flex');
+                fetchProducts(); 
+            }, 300);
+        }
+
+        // --- LOGIN REAL ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // UX: Bloquear botón
+            loginBtn.disabled = true;
+            loginBtn.innerText = "Verificando...";
+            loginError.classList.add('hidden');
+
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }) 
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Guardamos "sesión" simple
+                    localStorage.setItem('lb_auth', 'true');
+                    showAdminPanel();
+                } else {
+                    loginError.textContent = data.error || 'Credenciales incorrectas';
+                    loginError.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                loginError.textContent = 'Error de conexión con el servidor';
+                loginError.classList.remove('hidden');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Ingresar";
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('lb_auth');
+            window.location.reload();
+        });
+
+        // --- API PRODUCTOS (CRUD) ---
+
+        async function fetchProducts() {
+            showLoader(true);
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                if (!res.ok) throw new Error('Error al cargar');
+                const data = await res.json();
+                currentProducts = data.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                renderAdmin(searchInput.value);
+            } catch (err) {
+                console.error(err);
+                alert("No se pudo cargar la lista de productos.");
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        async function createProduct(data) {
+            const res = await fetch(`${API_URL}/products`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('Error al crear');
+            return await res.json();
+        }
+
+        async function updateProduct(id, data) {
+            const res = await fetch(`${API_URL}/products/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error('Error al actualizar');
+            return await res.json();
+        }
+
+        async function deleteProductApi(id) {
+            const res = await fetch(`${API_URL}/products/${id}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('Error al eliminar');
+        }
+
+        // --- RENDER & UI ---
+
+        function formatPrice(n) {
+            return '$' + new Intl.NumberFormat('es-AR').format(n);
+        }
+
+        function showLoader(show) {
+            loader.style.display = show ? 'block' : 'none';
+        }
+
+        function renderAdmin(filterText = '') {
+            const filtered = currentProducts.filter(p => 
+                p.nombre.toLowerCase().includes(filterText.toLowerCase())
+            );
+            
+            tbody.innerHTML = filtered.map(item => `
+                <tr class="hover:bg-black/5 transition-colors duration-150 group">
+                    <td class="py-4 px-6 font-medium text-gray-900">${item.nombre}</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">
+                        <span class="bg-white/50 px-2 py-1 rounded-md border border-black/5">${item.unidad}</span>
+                    </td>
+                    <td class="py-4 px-6 text-right font-bold text-gray-700">${formatPrice(item.precio)}</td>
+                    <td class="py-4 px-6 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="editProduct(${item.id})" class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors" title="Editar">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </button>
+                            <button onclick="deleteProduct(${item.id})" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors" title="Eliminar">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            mobileList.innerHTML = filtered.map(item => `
+                <article class="bg-white/40 border border-black/5 rounded-2xl p-5 shadow-sm flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-gray-900">${item.nombre}</div>
+                        <div class="text-sm text-gray-500 mt-1">${formatPrice(item.precio)} / ${item.unidad}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editProduct(${item.id})" class="p-2 bg-white border border-gray-200 rounded-lg text-blue-600 shadow-sm">
+                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        </button>
+                        <button onclick="deleteProduct(${item.id})" class="p-2 bg-white border border-gray-200 rounded-lg text-red-600 shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        searchInput.addEventListener('input', (e) => renderAdmin(e.target.value));
+
+        // --- HANDLERS GLOBALES ---
+        
+        window.openModal = function() {
+            productForm.reset();
+            productIdInput.value = ""; 
+            modalTitle.textContent = "Nuevo Producto";
+            modal.classList.remove('hidden');
+        };
+
+        window.closeModal = function() {
+            modal.classList.add('hidden');
+        };
+
+        window.editProduct = function(id) {
+            const item = currentProducts.find(p => p.id === id);
+            if (!item) return;
+
+            document.getElementById('prodName').value = item.nombre;
+            document.getElementById('prodUnit').value = item.unidad;
+            document.getElementById('prodPrice').value = item.precio;
+            productIdInput.value = item.id;
+            
+            modalTitle.textContent = "Editar Producto";
+            modal.classList.remove('hidden');
+        };
+
+        window.deleteProduct = async function(id) {
+            if(confirm('¿Estás seguro de eliminar este producto?')) {
+                try {
+                    await deleteProductApi(id);
+                    fetchProducts();
+                } catch (e) {
+                    alert('Error al eliminar: ' + e.message);
+                }
+            }
+        };
+
+        // --- SUBMIT PRODUCTO ---
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "Guardando...";
+            saveBtn.disabled = true;
+
+            const id = productIdInput.value;
+            const productoData = {
+                nombre: document.getElementById('prodName').value,
+                unidad: document.getElementById('prodUnit').value,
+                precio: parseFloat(document.getElementById('prodPrice').value)
+            };
+
+            try {
+                if (id) {
+                    await updateProduct(id, productoData);
+                } else {
+                    await createProduct(productoData);
+                }
+                closeModal();
+                fetchProducts();
+            } catch (err) {
+                console.error(err);
+                alert("Error al guardar: " + err.message);
+            } finally {
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+            }
+        });
+
+    </script>
+</body>
+</html>

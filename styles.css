@@ -1,0 +1,56 @@
+:root {
+  --brand: #99682D;
+  --offwhite: #F5F6F7;
+  --panel: #EBE6DA; /* El color crema que pediste */
+}
+
+/* Fondo global con imagen */
+body {
+  position: relative;
+  background-color: var(--offwhite);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url('assets/background-dashboard.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.16;
+  z-index: 0;
+  filter: saturate(0.95) brightness(0.95);
+  pointer-events: none;
+}
+
+header, main, footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- UNIFICACIÓN COLOR CREMA --- */
+/* Aplicamos el crema al Header, Footer y al contenedor de la lista */
+header, 
+footer, 
+.panel-crema {
+  background-color: var(--panel) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Forzamos que los elementos que antes eran bg-white ahora sean crema */
+.bg-white {
+  background-color: var(--panel) !important;
+}
+
+/* Estilos para el buscador para que se vea bien sobre el crema */
+#searchInput {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ajustes de tipografía y efectos */
+.text-brand { color: var(--brand) !important; }
+.font-display { font-family: 'Playfair Display', serif; }
+.font-body { font-family: 'Inter', sans-serif; }
+
+.nav-link:hover { color: var(--brand); transform: translateY(-2px); }

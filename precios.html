@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lista de precios — La Blanquita del Barrio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#99682D',
+            offwhite: '#F5F6F7',
+            panel: '#EBE6DA'
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="styles.css" rel="stylesheet">
+</head>
+
+<body class="font-body bg-offwhite text-gray-800 antialiased min-h-screen flex flex-col">
+  
+  <header class="sticky top-0 z-50 shadow-sm border-b border-black/5">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-14 h-14 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+          <img src="assets/lb_logo.png" alt="La Blanquita logo" class="w-full h-full object-contain p-0.5">
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold">La Blanquita del Barrio</h1>
+          <p class="text-sm text-gray-500">Pastas artesanales •</p>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-6xl mx-auto px-6 py-10">
+    <h2 class="text-3xl font-display mb-2">Lista de precios</h2>
+    <p class="text-gray-600 mb-6 text-sm">Precios sujetos a modificaciones sin previo aviso.</p>
+
+    <div class="panel-crema rounded-3xl border border-black/5 p-4 md:p-8 shadow-xl overflow-hidden relative">
+      
+      <div class="flex items-center justify-between mb-6">
+        <div class="relative group w-full md:max-w-md">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400 group-focus-within:text-brand transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-3 rounded-2xl leading-5 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brand sm:text-sm transition-all duration-200 shadow-sm bg-white/50 border border-gray-200" placeholder="Buscar productos...">
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-2xl border border-black/5 hidden md:block">
+        <table class="w-full table-fixed min-w-[640px]">
+          <thead class="bg-black/5">
+            <tr class="text-gray-600 text-sm">
+              <th class="py-4 px-6 text-left uppercase tracking-wider font-medium">Producto</th>
+              <th class="py-4 px-6 text-left uppercase tracking-wider font-medium w-40">Unidad</th>
+              <th class="py-4 px-6 text-right uppercase tracking-wider font-medium w-40">Precio</th>
+            </tr>
+          </thead>
+          <tbody id="priceTable" class="divide-y divide-black/5">
+            <tr><td colspan="3" class="text-center py-6 text-gray-500">Cargando precios...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="priceListMobile" class="md:hidden grid gap-3 mt-4">
+        <div class="text-center py-4 text-gray-500">Cargando...</div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="mt-12 border-t border-black/5">
+    <div class="max-w-6xl mx-auto px-6 py-6 text-sm text-gray-600 flex flex-col md:flex-row items-center justify-between">
+      <div>© La Blanquita del Barrio — Pastas artesanales</div>
+      <div id="updatedAt" class="text-xs opacity-50 mt-2 md:mt-0"></div>
+    </div>
+  </footer>
+
+  <script type="module">
+    // 1. CONFIGURACIÓN API
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    
+    // Variables de estado
+    let allProducts = [];
+
+    // Elementos del DOM (Solo los que existen en este HTML)
+    const tableBody = document.getElementById('priceTable');
+    const mobileList = document.getElementById('priceListMobile');
+    const searchInput = document.getElementById('searchInput');
+    const updatedAtLabel = document.getElementById('updatedAt');
+
+    // Función para formatear precio
+    function formatPrice(price) {
+      return '$' + new Intl.NumberFormat('es-AR').format(price);
+    }
+
+    // Función principal de renderizado
+    function renderProducts(products) {
+      if (products.length === 0) {
+        const noDataHtml = '<tr><td colspan="3" class="text-center py-6 text-gray-500">No se encontraron productos.</td></tr>';
+        tableBody.innerHTML = noDataHtml;
+        mobileList.innerHTML = '<div class="text-center py-4 text-gray-500">No se encontraron productos.</div>';
+        return;
+      }
+
+      // Render Desktop
+      tableBody.innerHTML = products.map(p => `
+        <tr class="hover:bg-black/5 transition-colors duration-150">
+          <td class="py-4 px-6 font-medium text-gray-900">${p.nombre}</td>
+          <td class="py-4 px-6 text-sm text-gray-600">
+            <span class="bg-white/50 px-2 py-1 rounded-md border border-black/5">${p.unidad}</span>
+          </td>
+          <td class="py-4 px-6 text-right font-bold text-gray-700">${formatPrice(p.precio)}</td>
+        </tr>
+      `).join('');
+
+      // Render Mobile
+      mobileList.innerHTML = products.map(p => `
+        <article class="bg-white/40 border border-black/5 rounded-2xl p-5 shadow-sm flex justify-between items-center">
+          <div>
+            <div class="font-bold text-gray-900">${p.nombre}</div>
+            <div class="text-sm text-gray-500 mt-1">${p.unidad}</div>
+          </div>
+          <div class="font-bold text-brand text-lg">
+            ${formatPrice(p.precio)}
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // Función para obtener datos
+    async function fetchProducts() {
+      try {
+        const res = await fetch(`${API_URL}/products`);
+        if (!res.ok) throw new Error('Error de red');
+        
+        const data = await res.json();
+        
+        // Ordenamos alfabéticamente
+        allProducts = data.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        
+        renderProducts(allProducts);
+
+        
+
+      } catch (error) {
+        console.error("Error cargando precios:", error);
+        tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-red-500">Error al cargar la lista de precios. Intente nuevamente.</td></tr>';
+        mobileList.innerHTML = '<div class="text-center py-4 text-red-500">Error de conexión.</div>';
+      }
+    }
+
+    // Event Listeners
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allProducts.filter(p => 
+          p.nombre.toLowerCase().includes(term)
+        );
+        renderProducts(filtered);
+      });
+    }
+
+    // Iniciar carga
+    fetchProducts();
+  </script>
+</body>
+</html>

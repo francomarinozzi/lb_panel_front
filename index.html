@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>La Blanquita del Barrio — Pastas artesanales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#99682D',
+                        offwhite: '#F5F6F7',
+                        'muted-gray': '#EAEAEA'
+                    },
+                    fontFamily: {
+                        display: ['"Playfair Display"', 'serif'],
+                        body: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-body bg-offwhite text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <header class="bg-white/60 backdrop-blur sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+              <a href="#top" class="flex items-center gap-3">
+                        <div class="w-14 h-14 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+                            <img src="assets/lb_logo.png" alt="La Blanquita logo" class="w-full h-full object-contain p-0.5">
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-semibold">La Blanquita del Barrio</h1>
+                            <p class="text-sm text-gray-500 brand-tag">Pastas artesanales •</p>
+                        </div>
+                    </a>
+
+            <nav class="hidden md:flex gap-6 items-center text-gray-700">
+                <a href="precios.html" class="nav-link">Lista de precios</a>
+                <a href="#nosotros" class="nav-link">Nosotros</a>
+                <a href="#contacto" class="nav-link">Contacto</a>
+                <a href="#pedir" class="header-cta bg-brand text-white px-4 py-2 rounded-md shadow hover:brightness-95">Pedir</a>
+            </nav>
+
+            <button id="menuBtn" aria-label="Abrir menú"
+                class="menu-btn md:hidden p-2 rounded-md bg-white border border-gray-200 flex flex-col items-center justify-center">
+                <span class="bar w-5 h-0.5 bg-gray-700 block"></span>
+                <span class="bar w-5 h-0.5 bg-gray-700 block mt-1"></span>
+                <span class="bar w-5 h-0.5 bg-gray-700 block mt-1"></span>
+            </button>
+        </div>
+        <div id="mobileMenu" class="md:hidden hidden px-6 pb-4">
+            <a href="#productos" class="mobile-link block py-2 border-b border-muted-gray">Lista de</a>
+            <a href="#nosotros" class="mobile-link block py-2 border-b border-muted-gray">Nosotros</a>
+            <a href="#contacto" class="mobile-link block py-2 border-b border-muted-gray">Contacto</a>
+            <a href="#pedir" class="mobile-link block py-2 mt-2 bg-brand text-white text-center rounded-md">Pedir</a>
+        </div>
+    </header>
+
+    <main id="top" class="flex-grow">
+        <!-- Hero -->
+        <section class="relative overflow-hidden">
+            <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-10 items-center">
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-display text-gray-900 mb-4">La Blanquita del Barrio</h2>
+                    
+                    <p class="text-lg text-gray-600 mb-6">Pastas Frescas Artesanales🍝</p>
+                    <div class="flex gap-4">
+                        <a href="#productos"
+                            class="bg-brand text-white px-6 py-3 rounded-lg shadow hover:brightness-95">Ver
+                            productos</a>
+                        <a href="#contacto"
+                            class="border border-gray-300 px-6 py-3 rounded-lg text-gray-700 hover:bg-gray-50">Contacto</a>
+                    </div>
+                </div>
+                <div class="rounded-xl overflow-hidden shadow-lg">
+                    <div class="hero-bg h-72 relative flex items-center justify-center">
+                        <img src="assets/img1.png" alt="pastas" class="absolute inset-0 w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Productos (ahora: CTA a lista de precios) -->
+        <section id="productos" class="max-w-6xl mx-auto px-6 py-12">
+            <div class="bg-white rounded-xl p-8 shadow-lg text-center">
+                <h3 class="text-2xl font-semibold mb-3">Ver lista de precios</h3>
+                <p class="text-gray-600 mb-6">Consulta nuestra lista de precios completa y actualizada. Próximamente
+                    estará dinámicamente conectada al backend.</p>
+                <a href="precios.html"
+                    class="inline-block bg-brand text-white px-6 py-3 rounded-lg shadow hover:brightness-95">Ir a lista
+                    de precios</a>
+            </div>
+        </section>
+
+        <!-- Nosotros -->
+        <section id="nosotros" class="bg-white py-12">
+            <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-1 gap-8 items-center">
+                <div class="bg-white rounded-xl p-8 shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4">Nuestra historia</h3>
+                    <p class="text-gray-700">Más de 50 años acompañándote, con la misma frescura y calidad del primer
+                        día🍅🍃</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacto -->
+        <section id="contacto" class="max-w-6xl mx-auto px-6 py-12">
+            <h3 class="text-2xl font-semibold mb-6">Contacto y sucursales</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl p-6 shadow-lg border-l-4 border-brand">
+                    <h4 class="text-lg font-bold text-brand mb-2">Sucursal Hurlingham</h4>
+                    <p class="text-gray-700 mb-1"><strong>Dirección:</strong> Av. Gral Pedro Diaz 568</p>
+                    <p class="text-gray-700 mb-1"><strong>Horario:</strong> Mar-Sab 8:00 - 13:00 | 17:00 - 20:00 • Dom
+                        8:00 - 13:00</p>
+                    <p class="text-gray-700 mb-1"><strong>Tel/WhatsApp:</strong> +54 9 11 6799 5588</p>
+                    <p class="mt-3">
+                        <a href="https://wa.me/5491167995588?text=Hola%20Quisiera%20hacer%20un%20pedido" target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md text-sm">Mensaje
+                            por WhatsApp</a>
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-lg border-l-4 border-brand">
+                    <h4 class="text-lg font-bold text-brand mb-2">Sucursal Haedo</h4>
+                    <p class="text-gray-700 mb-1"><strong>Dirección:</strong> Fasola 693</p>
+                    <p class="text-gray-700 mb-1"><strong>Horario:</strong> Lun-Sab 8:00 - 13:00 | 17:00 - 20:00 • Dom
+                        8:00 - 13:00</p>
+                    <p class="text-gray-700 mb-1"><strong>Tel/WhatsApp:</strong> +54 11 5601 7009</p>
+                    <p class="mt-3">
+                        <a href="https://wa.me/541156017009?text=Hola%20Quisiera%20hacer%20un%20pedido" target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md text-sm">Mensaje
+                            por WhatsApp</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section id="pedir" class="max-w-6xl mx-auto px-6 py-12">
+            <h3 class="text-2xl font-semibold mb-6">Pedidos</h3>
+            <div id="pedir" class="mt-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                
+                <h4 class="text-lg font-bold text-brand mb-2">Pedidos — Retiro en mostrador</h4>
+                <p class="text-sm text-gray-600">Los pedidos se retiran en mostrador. Llamanos o enviá un mensaje con tu
+                    pedido y lo preparamos.</p>
+                <p class="text-sm text-gray-600 mt-2">Si querés retirar en otra sucursal, indicá cuál al momento del
+                    pedido.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white mt-12">
+        <div
+            class="max-w-6xl mx-auto px-6 py-6 text-sm text-gray-600 flex flex-col md:flex-row items-center justify-between">
+            <div>© La Blanquita del Barrio — Pastas artesanales</div>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+
+</html>
