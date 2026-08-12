@@ -2,441 +2,451 @@
 <html lang="es">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Administración — La Blanquita del Barrio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: '#99682D',
-                        offwhite: '#F5F6F7',
-                        'muted-gray': '#EAEAEA'
-                    },
-                    fontFamily: {
-                        display: ['"Playfair Display"', 'serif'],
-                        body: ['Inter', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="styles.css" rel="stylesheet">
-    <style>
-        .input-admin {
-            background-color: rgba(255, 255, 255, 0.6) !important;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        .input-admin:focus {
-            border-color: #99682D !important;
-            outline: none;
-            background-color: rgba(255, 255, 255, 0.9) !important;
-        }
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #99682D;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Administración — La Blanquita del Barrio</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#EBE6DA">
+  <link rel="icon" href="/assets/lb_logo_trim.png" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/styles.css">
 </head>
 
-<body class="font-body bg-offwhite text-gray-800 antialiased min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
-    <section id="loginSection" class="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-offwhite/80 backdrop-blur-sm transition-all duration-300">
-        <div class="panel-crema w-full max-w-sm p-8 rounded-2xl shadow-2xl border border-black/5 relative overflow-hidden">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm mx-auto mb-4">
-                    <img src="assets/lb_logo.png" alt="Logo" class="w-full h-full object-contain p-1">
-                </div>
-                <h1 class="text-2xl font-display font-bold text-gray-900">Acceso Admin</h1>
-                <p class="text-sm text-gray-600">Ingresá tus credenciales</p>
-            </div>
-            
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Usuario</label>
-                    <input type="text" id="username" class="input-admin w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400" placeholder="admin">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Contraseña</label>
-                    <input type="password" id="password" class="input-admin w-full px-4 py-3 rounded-xl text-gray-900 placeholder-gray-400" placeholder="••••••">
-                </div>
-                <button type="submit" id="loginBtn" class="w-full bg-brand text-white font-medium py-3 rounded-xl shadow-lg hover:brightness-110 transition-all transform active:scale-95">
-                    Ingresar
-                </button>
-            </form>
-            <p id="loginError" class="text-red-500 text-xs text-center mt-3 hidden"></p>
+  <!-- ===================================================================
+       Login
+       =================================================================== -->
+  <section id="loginSection" class="fixed inset-0 z-60 flex items-center justify-center p-5">
+    <div class="panel w-full max-w-sm p-8">
+      <div class="text-center">
+        <img src="/assets/lb_logo_trim.png" alt="" width="512" height="435" class="w-16 h-auto mx-auto">
+        <h1 class="display mt-5 text-2xl">Panel de administración</h1>
+        <p class="prose-warm mt-1 text-sm">Ingresá tus credenciales para continuar.</p>
+      </div>
+
+      <div class="ornament my-7"><span></span></div>
+
+      <form id="loginForm" class="space-y-4" novalidate>
+        <div>
+          <label for="username" class="eyebrow block mb-1.5">Usuario</label>
+          <input type="text" id="username" name="username" class="field" autocomplete="username" required>
         </div>
-    </section>
-
-    <div id="adminPanel" class="hidden flex-col min-h-screen">
-        
-        <header class="sticky top-0 z-40 shadow-sm border-b border-black/5">
-            <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
-                        <img src="assets/lb_logo.png" alt="Logo" class="w-full h-full object-contain p-0.5">
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-semibold leading-tight">Panel de Control</h1>
-                        <p class="text-xs text-gray-500">Gestión de Precios</p>
-                    </div>
-                </div>
-                <button id="logoutBtn" class="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors">
-                    Cerrar sesión
-                </button>
-            </div>
-        </header>
-
-        <main class="flex-grow max-w-6xl mx-auto px-6 py-10 w-full">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                <div>
-                    <h2 class="text-3xl font-display mb-1">Productos</h2>
-                    <p class="text-sm text-gray-600">Administra el catálogo completo.</p>
-                </div>
-                <button onclick="openModal()" class="bg-brand text-white px-6 py-3 rounded-xl shadow hover:brightness-110 transition-all flex items-center gap-2 justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    Nuevo Producto
-                </button>
-            </div>
-
-            <div class="panel-crema rounded-3xl border border-black/5 p-4 md:p-8 shadow-xl overflow-hidden relative">
-                <div class="mb-6 flex gap-4 items-center">
-                    <div class="relative group w-full">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400 group-focus-within:text-brand transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <input type="text" id="adminSearchInput" class="block w-full pl-10 pr-3 py-3 rounded-2xl leading-5 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brand sm:text-sm transition-all duration-200 shadow-sm" style="background-color: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.1);" placeholder="Buscar...">
-                    </div>
-                    <div id="loadingIndicator" class="hidden"><div class="loader"></div></div>
-                </div>
-
-                <div class="overflow-x-auto rounded-2xl border border-black/5 hidden md:block">
-                    <table class="w-full table-fixed min-w-[700px]">
-                        <thead class="bg-black/5">
-                            <tr class="text-gray-600 text-sm">
-                                <th class="py-4 px-6 text-left uppercase tracking-wider font-medium">Producto</th>
-                                <th class="py-4 px-6 text-left uppercase tracking-wider font-medium w-40">Unidad</th>
-                                <th class="py-4 px-6 text-right uppercase tracking-wider font-medium w-32">Precio</th>
-                                <th class="py-4 px-6 text-center uppercase tracking-wider font-medium w-32">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminTableBody" class="divide-y divide-black/5">
-                            </tbody>
-                    </table>
-                </div>
-
-                <div id="adminListMobile" class="md:hidden grid gap-3">
-                    </div>
-            </div>
-        </main>
-    </div>
-
-    <div id="productModal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
-            <div class="panel-crema rounded-2xl shadow-2xl border border-black/5 p-6 relative">
-                <h3 id="modalTitle" class="text-xl font-display font-bold mb-4 text-gray-900">Nuevo Producto</h3>
-                
-                <form id="productForm" class="space-y-4">
-                    <input type="hidden" id="productId"> 
-                    
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nombre del producto</label>
-                        <input type="text" id="prodName" required class="input-admin w-full px-4 py-2.5 rounded-xl text-gray-900">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Unidad</label>
-                            <input type="text" id="prodUnit" required list="units" class="input-admin w-full px-4 py-2.5 rounded-xl text-gray-900" placeholder="Ej: kg">
-                            <datalist id="units">
-                                <option value="kg">
-                                <option value="unidad">
-                                <option value="500g">
-                                <option value="Plancha">
-                                <option value="docena">
-                                <option value="caja">
-                            </datalist>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Precio ($)</label>
-                            <input type="number" id="prodPrice" required min="0" step="0.01" class="input-admin w-full px-4 py-2.5 rounded-xl text-gray-900">
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-3 mt-6 pt-2">
-                        <button type="button" onclick="closeModal()" class="flex-1 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-black/5 transition-colors">Cancelar</button>
-                        <button type="submit" id="saveBtn" class="flex-1 py-3 rounded-xl bg-brand text-white font-medium shadow-md hover:brightness-110 transition-all">Guardar</button>
-                    </div>
-                </form>
-            </div>
+        <div>
+          <label for="password" class="eyebrow block mb-1.5">Contraseña</label>
+          <input type="password" id="password" name="password" class="field" autocomplete="current-password" required>
         </div>
+        <button type="submit" id="loginBtn" class="btn btn-brand w-full mt-2">Ingresar</button>
+      </form>
+
+      <p id="loginError" class="hidden mt-4 text-sm text-center text-coral" role="alert"></p>
     </div>
+  </section>
 
-    <script type="module">
-        // 1. CONFIGURACIÓN API
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-        let currentProducts = [];
+  <!-- ===================================================================
+       Panel
+       =================================================================== -->
+  <div id="adminPanel" class="hidden grow flex-col">
 
-        // Elementos DOM
-        const loginSection = document.getElementById('loginSection');
-        const adminPanel = document.getElementById('adminPanel');
-        const loginForm = document.getElementById('loginForm');
-        const loginError = document.getElementById('loginError');
-        const loginBtn = document.getElementById('loginBtn');
-        
-        const tbody = document.getElementById('adminTableBody');
-        const mobileList = document.getElementById('adminListMobile');
-        const searchInput = document.getElementById('adminSearchInput');
-        const loader = document.getElementById('loadingIndicator');
+    <header class="sticky top-0 z-50 bg-crema/95 backdrop-blur-sm border-b border-rule">
+      <div class="mx-auto max-w-4xl px-5 sm:px-8 flex items-center justify-between gap-4 py-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <img src="/assets/lb_logo_trim.png" alt="" width="512" height="435" class="w-10 h-auto shrink-0">
+          <span class="leading-none min-w-0">
+            <span class="display block text-[1.0625rem] truncate">Panel de administración</span>
+            <span class="eyebrow mt-1 block text-[0.625rem]">Gestión de precios</span>
+          </span>
+        </div>
+        <button type="button" id="logoutBtn" class="nav-link text-sm shrink-0">Cerrar sesión</button>
+      </div>
+    </header>
 
-        // Modal Elements
-        const modal = document.getElementById('productModal');
-        const productForm = document.getElementById('productForm');
-        const modalTitle = document.getElementById('modalTitle');
-        const productIdInput = document.getElementById('productId');
+    <main class="grow mx-auto w-full max-w-4xl px-5 sm:px-8 py-10 sm:py-14">
 
-        // --- VERIFICAR SESIÓN PREVIA ---
-        if (localStorage.getItem('lb_auth') === 'true') {
-            showAdminPanel();
-        }
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="eyebrow">Catálogo</p>
+          <h2 class="display mt-2 text-3xl sm:text-4xl">Productos</h2>
+        </div>
+        <button type="button" id="newBtn" class="btn btn-brand">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              clip-rule="evenodd" />
+          </svg>
+          Nuevo producto
+        </button>
+      </div>
 
-        function showAdminPanel() {
-            loginSection.classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => {
-                loginSection.style.display = 'none';
-                adminPanel.classList.remove('hidden');
-                adminPanel.classList.add('flex');
-                fetchProducts(); 
-            }, 300);
-        }
+      <div class="mt-8">
+        <label for="adminSearchInput" class="sr-only">Buscar productos</label>
+        <div class="relative">
+          <svg class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" width="17" height="17"
+            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd" />
+          </svg>
+          <input type="search" id="adminSearchInput" class="field pl-10" placeholder="Buscar producto..."
+            autocomplete="off">
+        </div>
+      </div>
 
-        // --- LOGIN REAL ---
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // UX: Bloquear botón
-            loginBtn.disabled = true;
-            loginBtn.innerText = "Verificando...";
-            loginError.classList.add('hidden');
+      <p id="adminCount" class="eyebrow mt-4 h-4" aria-live="polite"></p>
 
-            try {
-                const res = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password }) 
-                });
+      <div class="panel mt-3 px-4 sm:px-6 py-2">
+        <ul id="adminList" class="divide-y divide-rule/60"></ul>
+      </div>
 
-                const data = await res.json();
+      <p id="statusMsg" class="hidden mt-4 text-sm text-center" role="status"></p>
+    </main>
+  </div>
 
-                if (res.ok) {
-                    // Guardamos "sesión" simple
-                    localStorage.setItem('lb_auth', 'true');
-                    showAdminPanel();
-                } else {
-                    loginError.textContent = data.error || 'Credenciales incorrectas';
-                    loginError.classList.remove('hidden');
-                }
-            } catch (err) {
-                console.error(err);
-                loginError.textContent = 'Error de conexión con el servidor';
-                loginError.classList.remove('hidden');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.innerText = "Ingresar";
-            }
+  <!-- ===================================================================
+       Modal alta / edición
+       =================================================================== -->
+  <div id="productModal" class="hidden fixed inset-0 z-50">
+    <!-- Velo sólido, sin backdrop-blur: el header sticky de abajo ya tiene su
+         propio backdrop-filter y dos capas superpuestas fantasmean el texto. -->
+    <div id="modalBackdrop" class="absolute inset-0 bg-ink/55"></div>
+
+    <div class="absolute inset-0 overflow-y-auto p-5 flex items-center justify-center">
+      <div class="panel relative w-full max-w-md p-6 sm:p-8" role="dialog" aria-modal="true"
+        aria-labelledby="modalTitle">
+        <h3 id="modalTitle" class="display text-2xl">Nuevo producto</h3>
+        <div class="ornament my-6"><span></span></div>
+
+        <form id="productForm" class="space-y-5">
+          <input type="hidden" id="productId">
+
+          <div>
+            <label for="prodName" class="eyebrow block mb-1.5">Nombre</label>
+            <input type="text" id="prodName" class="field" required autocomplete="off">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="prodUnit" class="eyebrow block mb-1.5">Unidad</label>
+              <input type="text" id="prodUnit" class="field" list="units" required placeholder="kg" autocomplete="off">
+              <datalist id="units">
+                <option value="kg"></option>
+                <option value="500g"></option>
+                <option value="unidad"></option>
+                <option value="docena"></option>
+                <option value="plancha"></option>
+                <option value="caja"></option>
+              </datalist>
+            </div>
+            <div>
+              <label for="prodPrice" class="eyebrow block mb-1.5">Precio</label>
+              <input type="number" id="prodPrice" class="field tnum" required min="0" step="0.01" inputmode="decimal">
+            </div>
+          </div>
+
+          <p id="modalError" class="hidden text-sm text-coral" role="alert"></p>
+
+          <div class="flex gap-3 pt-2">
+            <button type="button" id="cancelBtn" class="btn btn-outline flex-1">Cancelar</button>
+            <button type="submit" id="saveBtn" class="btn btn-brand flex-1">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+    const $ = (id) => document.getElementById(id);
+
+    const loginSection = $('loginSection');
+    const loginForm = $('loginForm');
+    const loginBtn = $('loginBtn');
+    const loginError = $('loginError');
+
+    const adminPanel = $('adminPanel');
+    const list = $('adminList');
+    const countLabel = $('adminCount');
+    const searchInput = $('adminSearchInput');
+    const statusMsg = $('statusMsg');
+
+    const modal = $('productModal');
+    const productForm = $('productForm');
+    const modalTitle = $('modalTitle');
+    const modalError = $('modalError');
+    const productId = $('productId');
+    const saveBtn = $('saveBtn');
+
+    let products = [];
+    let lastFocused = null;
+
+    const money = new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      maximumFractionDigits: 0
+    });
+
+    const esc = (value) =>
+      String(value ?? '').replace(/[&<>"']/g, (c) => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+      ));
+
+    function showStatus(text, ok = true) {
+      statusMsg.textContent = text;
+      statusMsg.className = `mt-4 text-sm text-center ${ok ? 'text-verde' : 'text-coral'}`;
+      clearTimeout(showStatus.timer);
+      showStatus.timer = setTimeout(() => statusMsg.classList.add('hidden'), 3500);
+    }
+
+    function showFieldError(el, text) {
+      el.textContent = text;
+      el.classList.remove('hidden');
+    }
+
+    /* ---------------------------------------------------------------- Sesión */
+
+    function openPanel() {
+      loginSection.classList.add('hidden');
+      adminPanel.classList.remove('hidden');
+      adminPanel.classList.add('flex');
+      loadProducts();
+    }
+
+    if (localStorage.getItem('lb_auth') === 'true') openPanel();
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError.classList.add('hidden');
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Verificando…';
+
+      try {
+        const res = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: $('username').value,
+            password: $('password').value
+          })
         });
+        const data = await res.json().catch(() => ({}));
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('lb_auth');
-            window.location.reload();
-        });
-
-        // --- API PRODUCTOS (CRUD) ---
-
-        async function fetchProducts() {
-            showLoader(true);
-            try {
-                const res = await fetch(`${API_URL}/products`);
-                if (!res.ok) throw new Error('Error al cargar');
-                const data = await res.json();
-                currentProducts = data.sort((a, b) => a.nombre.localeCompare(b.nombre));
-                renderAdmin(searchInput.value);
-            } catch (err) {
-                console.error(err);
-                alert("No se pudo cargar la lista de productos.");
-            } finally {
-                showLoader(false);
-            }
+        if (!res.ok) {
+          showFieldError(loginError, data.error || 'Credenciales incorrectas.');
+          return;
         }
+        localStorage.setItem('lb_auth', 'true');
+        openPanel();
+      } catch (err) {
+        console.error(err);
+        showFieldError(loginError, 'No pudimos conectar con el servidor.');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Ingresar';
+      }
+    });
 
-        async function createProduct(data) {
-            const res = await fetch(`${API_URL}/products`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) throw new Error('Error al crear');
-            return await res.json();
+    $('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('lb_auth');
+      location.reload();
+    });
+
+    /* ---------------------------------------------------------------- Render */
+
+    function renderSkeleton() {
+      list.innerHTML = Array.from({ length: 6 }, () => `
+        <li class="py-4 animate-pulse flex items-center gap-4">
+          <div class="h-3.5 bg-rule/50 rounded w-1/3"></div>
+          <div class="h-3.5 bg-rule/30 rounded flex-1"></div>
+          <div class="h-8 bg-rule/40 rounded w-20"></div>
+        </li>
+      `).join('');
+    }
+
+    function render() {
+      const term = searchInput.value.trim().toLowerCase();
+      const filtered = term
+        ? products.filter((p) => String(p.nombre).toLowerCase().includes(term))
+        : products;
+
+      countLabel.textContent = products.length
+        ? `${filtered.length} de ${products.length} ${products.length === 1 ? 'producto' : 'productos'}`
+        : '';
+
+      if (!filtered.length) {
+        list.innerHTML = `<li class="py-10 text-center text-ink-3">${products.length
+          ? 'No encontramos productos con ese nombre.'
+          : 'Todavía no hay productos cargados.'}</li>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((p) => `
+        <li class="py-3 flex items-center gap-3">
+          <span class="min-w-0 grow">
+            <span class="block text-ink truncate">${esc(p.nombre)}</span>
+            <span class="eyebrow mt-1 block">${esc(p.unidad)}</span>
+          </span>
+          <span class="display tnum text-brand shrink-0">${esc(money.format(p.precio))}</span>
+          <span class="flex gap-1 shrink-0">
+            <button type="button" data-action="edit" data-id="${esc(p.id)}"
+              class="p-2 rounded text-ink-2 hover:text-brand hover:bg-crema-deep transition-colors"
+              aria-label="Editar ${esc(p.nombre)}">
+              <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M16.7 3.7a2.5 2.5 0 113.6 3.6L6.5 21H3v-3.5L16.7 3.7z"/>
+              </svg>
+            </button>
+            <button type="button" data-action="delete" data-id="${esc(p.id)}"
+              class="p-2 rounded text-ink-2 hover:text-coral hover:bg-crema-deep transition-colors"
+              aria-label="Eliminar ${esc(p.nombre)}">
+              <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.9 12.1a2 2 0 01-2 1.9H7.9a2 2 0 01-2-1.9L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+          </span>
+        </li>
+      `).join('');
+    }
+
+    /* ------------------------------------------------------------------- API */
+
+    async function loadProducts() {
+      renderSkeleton();
+      try {
+        const res = await fetch(`${API_URL}/products`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        products = data.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+        render();
+      } catch (err) {
+        console.error(err);
+        countLabel.textContent = '';
+        list.innerHTML = `
+          <li class="py-10 text-center">
+            <p class="text-ink">No pudimos cargar los productos.</p>
+            <button type="button" data-action="retry" class="btn btn-outline mt-4">Reintentar</button>
+          </li>`;
+      }
+    }
+
+    async function send(method, path, body) {
+      const res = await fetch(`${API_URL}${path}`, {
+        method,
+        headers: body ? { 'Content-Type': 'application/json' } : undefined,
+        body: body ? JSON.stringify(body) : undefined
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      return res.status === 204 ? null : res.json().catch(() => null);
+    }
+
+    /* ----------------------------------------------------------------- Modal */
+
+    function openModal(product) {
+      lastFocused = document.activeElement;
+      modalError.classList.add('hidden');
+      productForm.reset();
+
+      if (product) {
+        modalTitle.textContent = 'Editar producto';
+        productId.value = product.id;
+        $('prodName').value = product.nombre;
+        $('prodUnit').value = product.unidad;
+        $('prodPrice').value = product.precio;
+      } else {
+        modalTitle.textContent = 'Nuevo producto';
+        productId.value = '';
+      }
+
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      $('prodName').focus();
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      lastFocused?.focus();
+    }
+
+    $('newBtn').addEventListener('click', () => openModal(null));
+    $('cancelBtn').addEventListener('click', closeModal);
+    $('modalBackdrop').addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+
+    productForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      modalError.classList.add('hidden');
+
+      const payload = {
+        nombre: $('prodName').value.trim(),
+        unidad: $('prodUnit').value.trim(),
+        precio: Number($('prodPrice').value)
+      };
+
+      if (!payload.nombre || !payload.unidad || !Number.isFinite(payload.precio)) {
+        showFieldError(modalError, 'Completá todos los campos.');
+        return;
+      }
+
+      const id = productId.value;
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Guardando…';
+
+      try {
+        if (id) await send('PUT', `/products/${id}`, payload);
+        else await send('POST', '/products', payload);
+
+        closeModal();
+        showStatus(id ? 'Producto actualizado.' : 'Producto creado.');
+        await loadProducts();
+      } catch (err) {
+        console.error(err);
+        showFieldError(modalError, `No se pudo guardar: ${err.message}`);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Guardar';
+      }
+    });
+
+    /* -------------------------------------------------------- Acciones lista */
+
+    list.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+
+      const { action, id } = btn.dataset;
+
+      if (action === 'retry') return loadProducts();
+
+      const product = products.find((p) => String(p.id) === String(id));
+      if (!product) return;
+
+      if (action === 'edit') return openModal(product);
+
+      if (action === 'delete') {
+        if (!confirm(`¿Eliminar "${product.nombre}"? Esta acción no se puede deshacer.`)) return;
+        try {
+          await send('DELETE', `/products/${id}`);
+          showStatus('Producto eliminado.');
+          await loadProducts();
+        } catch (err) {
+          console.error(err);
+          showStatus(`No se pudo eliminar: ${err.message}`, false);
         }
+      }
+    });
 
-        async function updateProduct(id, data) {
-            const res = await fetch(`${API_URL}/products/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            if (!res.ok) throw new Error('Error al actualizar');
-            return await res.json();
-        }
-
-        async function deleteProductApi(id) {
-            const res = await fetch(`${API_URL}/products/${id}`, {
-                method: 'DELETE'
-            });
-            if (!res.ok) throw new Error('Error al eliminar');
-        }
-
-        // --- RENDER & UI ---
-
-        function formatPrice(n) {
-            return '$' + new Intl.NumberFormat('es-AR').format(n);
-        }
-
-        function showLoader(show) {
-            loader.style.display = show ? 'block' : 'none';
-        }
-
-        function renderAdmin(filterText = '') {
-            const filtered = currentProducts.filter(p => 
-                p.nombre.toLowerCase().includes(filterText.toLowerCase())
-            );
-            
-            tbody.innerHTML = filtered.map(item => `
-                <tr class="hover:bg-black/5 transition-colors duration-150 group">
-                    <td class="py-4 px-6 font-medium text-gray-900">${item.nombre}</td>
-                    <td class="py-4 px-6 text-sm text-gray-600">
-                        <span class="bg-white/50 px-2 py-1 rounded-md border border-black/5">${item.unidad}</span>
-                    </td>
-                    <td class="py-4 px-6 text-right font-bold text-gray-700">${formatPrice(item.precio)}</td>
-                    <td class="py-4 px-6 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            <button onclick="editProduct(${item.id})" class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors" title="Editar">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            </button>
-                            <button onclick="deleteProduct(${item.id})" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors" title="Eliminar">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-
-            mobileList.innerHTML = filtered.map(item => `
-                <article class="bg-white/40 border border-black/5 rounded-2xl p-5 shadow-sm flex justify-between items-center">
-                    <div>
-                        <div class="font-bold text-gray-900">${item.nombre}</div>
-                        <div class="text-sm text-gray-500 mt-1">${formatPrice(item.precio)} / ${item.unidad}</div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="editProduct(${item.id})" class="p-2 bg-white border border-gray-200 rounded-lg text-blue-600 shadow-sm">
-                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        </button>
-                        <button onclick="deleteProduct(${item.id})" class="p-2 bg-white border border-gray-200 rounded-lg text-red-600 shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>
-                </article>
-            `).join('');
-        }
-
-        searchInput.addEventListener('input', (e) => renderAdmin(e.target.value));
-
-        // --- HANDLERS GLOBALES ---
-        
-        window.openModal = function() {
-            productForm.reset();
-            productIdInput.value = ""; 
-            modalTitle.textContent = "Nuevo Producto";
-            modal.classList.remove('hidden');
-        };
-
-        window.closeModal = function() {
-            modal.classList.add('hidden');
-        };
-
-        window.editProduct = function(id) {
-            const item = currentProducts.find(p => p.id === id);
-            if (!item) return;
-
-            document.getElementById('prodName').value = item.nombre;
-            document.getElementById('prodUnit').value = item.unidad;
-            document.getElementById('prodPrice').value = item.precio;
-            productIdInput.value = item.id;
-            
-            modalTitle.textContent = "Editar Producto";
-            modal.classList.remove('hidden');
-        };
-
-        window.deleteProduct = async function(id) {
-            if(confirm('¿Estás seguro de eliminar este producto?')) {
-                try {
-                    await deleteProductApi(id);
-                    fetchProducts();
-                } catch (e) {
-                    alert('Error al eliminar: ' + e.message);
-                }
-            }
-        };
-
-        // --- SUBMIT PRODUCTO ---
-        productForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const saveBtn = document.getElementById('saveBtn');
-            const originalText = saveBtn.innerText;
-            saveBtn.innerText = "Guardando...";
-            saveBtn.disabled = true;
-
-            const id = productIdInput.value;
-            const productoData = {
-                nombre: document.getElementById('prodName').value,
-                unidad: document.getElementById('prodUnit').value,
-                precio: parseFloat(document.getElementById('prodPrice').value)
-            };
-
-            try {
-                if (id) {
-                    await updateProduct(id, productoData);
-                } else {
-                    await createProduct(productoData);
-                }
-                closeModal();
-                fetchProducts();
-            } catch (err) {
-                console.error(err);
-                alert("Error al guardar: " + err.message);
-            } finally {
-                saveBtn.innerText = originalText;
-                saveBtn.disabled = false;
-            }
-        });
-
-    </script>
+    searchInput.addEventListener('input', render);
+  </script>
 </body>
+
 </html>

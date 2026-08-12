@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Administración — La Blanquita del Barrio</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#EBE6DA">
+  <link rel="icon" href="/assets/lb_logo_trim-3mkTZoY6.png" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+  <script type="module" crossorigin src="/assets/admin-DCsKbvQj.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/styles-C_cZFtkm.js">
+  <link rel="stylesheet" crossorigin href="/assets/styles-BePJ0naB.css">
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+  <!-- ===================================================================
+       Login
+       =================================================================== -->
+  <section id="loginSection" class="fixed inset-0 z-60 flex items-center justify-center p-5">
+    <div class="panel w-full max-w-sm p-8">
+      <div class="text-center">
+        <img src="/assets/lb_logo_trim-3mkTZoY6.png" alt="" width="512" height="435" class="w-16 h-auto mx-auto">
+        <h1 class="display mt-5 text-2xl">Panel de administración</h1>
+        <p class="prose-warm mt-1 text-sm">Ingresá tus credenciales para continuar.</p>
+      </div>
+
+      <div class="ornament my-7"><span></span></div>
+
+      <form id="loginForm" class="space-y-4" novalidate>
+        <div>
+          <label for="username" class="eyebrow block mb-1.5">Usuario</label>
+          <input type="text" id="username" name="username" class="field" autocomplete="username" required>
+        </div>
+        <div>
+          <label for="password" class="eyebrow block mb-1.5">Contraseña</label>
+          <input type="password" id="password" name="password" class="field" autocomplete="current-password" required>
+        </div>
+        <button type="submit" id="loginBtn" class="btn btn-brand w-full mt-2">Ingresar</button>
+      </form>
+
+      <p id="loginError" class="hidden mt-4 text-sm text-center text-coral" role="alert"></p>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       Panel
+       =================================================================== -->
+  <div id="adminPanel" class="hidden grow flex-col">
+
+    <header class="sticky top-0 z-50 bg-crema/95 backdrop-blur-sm border-b border-rule">
+      <div class="mx-auto max-w-4xl px-5 sm:px-8 flex items-center justify-between gap-4 py-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <img src="/assets/lb_logo_trim-3mkTZoY6.png" alt="" width="512" height="435" class="w-10 h-auto shrink-0">
+          <span class="leading-none min-w-0">
+            <span class="display block text-[1.0625rem] truncate">Panel de administración</span>
+            <span class="eyebrow mt-1 block text-[0.625rem]">Gestión de precios</span>
+          </span>
+        </div>
+        <button type="button" id="logoutBtn" class="nav-link text-sm shrink-0">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <main class="grow mx-auto w-full max-w-4xl px-5 sm:px-8 py-10 sm:py-14">
+
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="eyebrow">Catálogo</p>
+          <h2 class="display mt-2 text-3xl sm:text-4xl">Productos</h2>
+        </div>
+        <button type="button" id="newBtn" class="btn btn-brand">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              clip-rule="evenodd" />
+          </svg>
+          Nuevo producto
+        </button>
+      </div>
+
+      <div class="mt-8">
+        <label for="adminSearchInput" class="sr-only">Buscar productos</label>
+        <div class="relative">
+          <svg class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" width="17" height="17"
+            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd" />
+          </svg>
+          <input type="search" id="adminSearchInput" class="field pl-10" placeholder="Buscar producto..."
+            autocomplete="off">
+        </div>
+      </div>
+
+      <p id="adminCount" class="eyebrow mt-4 h-4" aria-live="polite"></p>
+
+      <div class="panel mt-3 px-4 sm:px-6 py-2">
+        <ul id="adminList" class="divide-y divide-rule/60"></ul>
+      </div>
+
+      <p id="statusMsg" class="hidden mt-4 text-sm text-center" role="status"></p>
+    </main>
+  </div>
+
+  <!-- ===================================================================
+       Modal alta / edición
+       =================================================================== -->
+  <div id="productModal" class="hidden fixed inset-0 z-50">
+    <!-- Velo sólido, sin backdrop-blur: el header sticky de abajo ya tiene su
+         propio backdrop-filter y dos capas superpuestas fantasmean el texto. -->
+    <div id="modalBackdrop" class="absolute inset-0 bg-ink/55"></div>
+
+    <div class="absolute inset-0 overflow-y-auto p-5 flex items-center justify-center">
+      <div class="panel relative w-full max-w-md p-6 sm:p-8" role="dialog" aria-modal="true"
+        aria-labelledby="modalTitle">
+        <h3 id="modalTitle" class="display text-2xl">Nuevo producto</h3>
+        <div class="ornament my-6"><span></span></div>
+
+        <form id="productForm" class="space-y-5">
+          <input type="hidden" id="productId">
+
+          <div>
+            <label for="prodName" class="eyebrow block mb-1.5">Nombre</label>
+            <input type="text" id="prodName" class="field" required autocomplete="off">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="prodUnit" class="eyebrow block mb-1.5">Unidad</label>
+              <input type="text" id="prodUnit" class="field" list="units" required placeholder="kg" autocomplete="off">
+              <datalist id="units">
+                <option value="kg"></option>
+                <option value="500g"></option>
+                <option value="unidad"></option>
+                <option value="docena"></option>
+                <option value="plancha"></option>
+                <option value="caja"></option>
+              </datalist>
+            </div>
+            <div>
+              <label for="prodPrice" class="eyebrow block mb-1.5">Precio</label>
+              <input type="number" id="prodPrice" class="field tnum" required min="0" step="0.01" inputmode="decimal">
+            </div>
+          </div>
+
+          <p id="modalError" class="hidden text-sm text-coral" role="alert"></p>
+
+          <div class="flex gap-3 pt-2">
+            <button type="button" id="cancelBtn" class="btn btn-outline flex-1">Cancelar</button>
+            <button type="submit" id="saveBtn" class="btn btn-brand flex-1">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

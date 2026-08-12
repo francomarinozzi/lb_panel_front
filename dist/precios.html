@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lista de precios — La Blanquita del Barrio</title>
+  <meta name="description" content="Lista de precios vigente de La Blanquita del Barrio. Pastas frescas artesanales en Hurlingham y Haedo.">
+  <meta name="theme-color" content="#EBE6DA">
+  <link rel="icon" href="/assets/lb_logo_trim-3mkTZoY6.png" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+  <script type="module" crossorigin src="/assets/precios-DsP8AGoE.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/styles-C_cZFtkm.js">
+  <link rel="stylesheet" crossorigin href="/assets/styles-BePJ0naB.css">
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+  <header class="sticky top-0 z-50 bg-crema/95 backdrop-blur-sm border-b border-rule">
+    <div class="mx-auto max-w-3xl px-5 sm:px-8">
+      <div class="flex items-center justify-between gap-4 py-3">
+        <a href="/" class="flex items-center gap-3 shrink-0">
+          <img src="/assets/lb_logo_trim-3mkTZoY6.png" alt="" width="512" height="435" class="w-11 sm:w-13 h-auto">
+          <span class="leading-none">
+            <span class="display block text-[1.0625rem] sm:text-xl">La Blanquita del Barrio</span>
+            <span class="eyebrow mt-1 block text-[0.625rem]">Pastas frescas artesanales</span>
+          </span>
+        </a>
+        <a href="/" class="nav-link hidden sm:inline text-[0.9375rem]">&larr; Volver</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="grow mx-auto w-full max-w-3xl px-5 sm:px-8 py-10 sm:py-16">
+
+    <div class="text-center">
+      <p class="eyebrow">Vigente</p>
+      <h1 class="display mt-3 text-4xl sm:text-5xl">Lista de precios</h1>
+      <div class="ornament mt-6 mx-auto max-w-[13rem]"><span></span></div>
+    </div>
+
+    <!-- Buscador: pegado bajo el header, porque la lista es larga -->
+    <div class="sticky top-[4.25rem] z-40 -mx-5 sm:mx-0 px-5 sm:px-0 py-3 bg-offwhite/80 backdrop-blur-sm mt-8">
+      <label for="searchInput" class="sr-only">Buscar productos</label>
+      <div class="relative">
+        <svg class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" width="17" height="17"
+          viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd"
+            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+            clip-rule="evenodd" />
+        </svg>
+        <input type="search" id="searchInput" class="field pl-10" placeholder="Buscar producto..." autocomplete="off">
+      </div>
+    </div>
+
+    <p id="resultCount" class="eyebrow mt-4 h-4" aria-live="polite"></p>
+
+    <!-- La misma lista sirve para móvil y escritorio: es un renglón de carta,
+         no una tabla. Evita mantener dos renders en paralelo. -->
+    <div class="panel mt-3 px-5 sm:px-8 py-2 sm:py-4">
+      <ul id="priceList" class="divide-y divide-rule/60"></ul>
+    </div>
+
+    <p class="prose-warm mt-6 text-sm text-center">
+      Los precios pueden variar sin previo aviso. Consultá disponibilidad en el mostrador.
+    </p>
+
+    <div class="mt-10 text-center">
+      <a href="/#sucursales" class="btn btn-outline">Ver sucursales y horarios</a>
+    </div>
+  </main>
+
+  <footer class="border-t border-rule bg-crema">
+    <div class="mx-auto max-w-3xl px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-ink-3">© <span id="year">2026</span> La Blanquita del Barrio</p>
+      <a href="/" class="nav-link text-sm">Volver al inicio</a>
+    </div>
+  </footer>
+
+</body>
+
+</html>

@@ -1,56 +1,385 @@
-:root {
-  --brand: #99682D;
-  --offwhite: #F5F6F7;
-  --panel: #EBE6DA; /* El color crema que pediste */
+@import "tailwindcss";
+
+/* ==========================================================================
+   Tokens
+   La paleta original se mantiene: brand #99682D, crema #EBE6DA, off-white
+   #F5F6F7. Se suman el verde y el coral tomados del propio logo, y una escala
+   de neutros cálidos (en vez de los grises fríos de Tailwind) para que las
+   superficies lean como papel y no como pantalla.
+   ========================================================================== */
+@theme {
+  --color-brand: #99682d;
+  --color-brand-deep: #7a5222;
+  --color-brand-soft: #b98d52;
+  --color-brand-wash: #e3d6c1;
+
+  --color-crema: #ebe6da;
+  --color-crema-deep: #ddd6c5;
+  --color-offwhite: #f5f6f7;
+
+  --color-verde: #0e8b5c;
+  --color-verde-deep: #0a6d47;
+  --color-coral: #e66b6d;
+
+  --color-ink: #2b241d;
+  --color-ink-2: #574c40;
+  --color-ink-3: #8b7f70;
+  --color-rule: #cfc5b2;
+
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: Inter, ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Fondo global con imagen */
-body {
-  position: relative;
-  background-color: var(--offwhite);
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* el header sticky no debe tapar la sección a la que se saltó */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    position: relative;
+    background-color: var(--color-offwhite);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Capa 1: la foto de la cocina, fija, apenas insinuada. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("/assets/background-dashboard.jpg");
+    background-size: cover;
+    background-position: center;
+    opacity: 0.16;
+    filter: saturate(0.7) brightness(1.05);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Capa 2: grano de papel + viñeta cálida, para que la foto no se lea como
+     foto sino como textura del soporte. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(120% 90% at 50% 0%, transparent 40%, rgb(43 36 29 / 0.09) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+  }
+
+  /* Todo el contenido vive por encima de las dos capas de fondo. */
+  body > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  ::selection {
+    background: var(--color-brand-wash);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url('assets/background-dashboard.jpg');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.16;
-  z-index: 0;
-  filter: saturate(0.95) brightness(0.95);
-  pointer-events: none;
+@layer components {
+  /* ========================================================================
+     Tipografía
+     ======================================================================== */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  /* Volanta en versalitas espaciadas: el recurso que ordena toda la jerarquía
+     sin necesidad de sumar tamaños de título. */
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .prose-warm {
+    color: var(--color-ink-2);
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  /* ========================================================================
+     Superficies — fichas de papel: filete de 1px, radio corto, sombra apenas
+     perceptible. Nada de tarjetas flotantes.
+     ======================================================================== */
+  .panel {
+    background-color: var(--color-crema);
+    border: 1px solid var(--color-rule);
+    border-radius: 6px;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.5) inset,
+      0 1px 2px rgb(43 36 29 / 0.05);
+  }
+
+  .panel-plain {
+    background-color: color-mix(in srgb, var(--color-crema) 55%, white);
+    border: 1px solid var(--color-rule);
+    border-radius: 6px;
+  }
+
+  /* ========================================================================
+     Ornamentos de imprenta
+     ======================================================================== */
+
+  /* Filete — rombo — filete. Divisor tipográfico clásico. */
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-rule);
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1 1 0;
+      height: 1px;
+      background: currentColor;
+    }
+
+    & > span {
+      flex: none;
+      width: 6px;
+      height: 6px;
+      rotate: 45deg;
+      background: var(--color-coral);
+    }
+  }
+
+  /* Doble filete: grueso arriba, fino abajo. */
+  .rule-double {
+    height: 5px;
+    border-top: 3px solid var(--color-ink);
+    border-bottom: 1px solid var(--color-ink);
+  }
+
+  /* ========================================================================
+     Controles
+     ======================================================================== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8125rem 1.375rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s,
+      color 0.15s,
+      transform 0.1s;
+
+    &:active {
+      transform: translateY(1px);
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+  }
+
+  .btn-brand {
+    background: var(--color-brand);
+    color: #fff;
+
+    &:hover {
+      background: var(--color-brand-deep);
+    }
+  }
+
+  .btn-outline {
+    background: transparent;
+    border-color: var(--color-rule);
+    color: var(--color-ink);
+
+    &:hover {
+      background: var(--color-crema-deep);
+      border-color: var(--color-brand-soft);
+    }
+  }
+
+  .btn-wa {
+    background: var(--color-verde);
+    color: #fff;
+
+    &:hover {
+      background: var(--color-verde-deep);
+    }
+  }
+
+  .field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgb(255 255 255 / 0.65);
+    border: 1px solid var(--color-rule);
+    border-radius: 4px;
+    color: var(--color-ink);
+    transition:
+      border-color 0.15s,
+      background-color 0.15s,
+      box-shadow 0.15s;
+
+    &::placeholder {
+      color: var(--color-ink-3);
+    }
+
+    &:focus {
+      outline: none;
+      background: #fff;
+      border-color: var(--color-brand);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
+    }
+  }
+
+  /* ========================================================================
+     Lista de precios — renglón de carta impresa, con puntos guía.
+     ======================================================================== */
+  .leader {
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+  }
+
+  /* Va vacío: al alinearse por baseline, su borde inferior cae justo sobre la
+     línea de base del renglón, como los puntos guía de una carta impresa. */
+  .leader-fill {
+    flex: 1 1 auto;
+    min-width: 1.5rem;
+    translate: 0 0.15rem;
+    border-bottom: 1px dotted var(--color-rule);
+  }
+
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* ========================================================================
+     Navegación
+     ======================================================================== */
+  .nav-link {
+    position: relative;
+    padding-block: 0.25rem;
+    color: var(--color-ink-2);
+    transition: color 0.15s;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      height: 1px;
+      background: var(--color-brand);
+      scale: 0 1;
+      transition: scale 0.2s;
+    }
+
+    &:hover {
+      color: var(--color-ink);
+
+      &::after {
+        scale: 1 1;
+      }
+    }
+  }
+
+  /* Desplegable del menú móvil.
+     Se anima con grid-template-rows 0fr → 1fr en vez de max-height: así llega
+     exactamente a la altura del contenido, sin número mágico que quede corto
+     si mañana se suma un ítem.
+     La visibility acompaña la transición para que los enlaces no sean
+     tabulables mientras está cerrado. */
+  .menu-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows 0.28s ease,
+      visibility 0.28s;
+
+    & > div {
+      overflow: hidden;
+    }
+
+    /* El contenido entra un pelín después y desde arriba. */
+    & > div > * {
+      opacity: 0;
+      translate: 0 -0.375rem;
+      transition:
+        opacity 0.2s ease,
+        translate 0.2s ease;
+    }
+
+    &[data-open="true"] {
+      grid-template-rows: 1fr;
+      visibility: visible;
+
+      & > div > * {
+        opacity: 1;
+        translate: 0 0;
+        transition-delay: 0.07s;
+      }
+    }
+  }
+
+  /* Hamburguesa → cruz */
+  .menu-btn .bar {
+    transition:
+      translate 0.2s,
+      rotate 0.2s,
+      opacity 0.15s;
+  }
+  .menu-btn[aria-expanded="true"] {
+    & .bar:nth-child(1) {
+      translate: 0 6px;
+      rotate: 45deg;
+    }
+    & .bar:nth-child(2) {
+      opacity: 0;
+    }
+    & .bar:nth-child(3) {
+      translate: 0 -6px;
+      rotate: -45deg;
+    }
+  }
 }
 
-header, main, footer {
-  position: relative;
-  z-index: 1;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
-
-/* --- UNIFICACIÓN COLOR CREMA --- */
-/* Aplicamos el crema al Header, Footer y al contenedor de la lista */
-header, 
-footer, 
-.panel-crema {
-  background-color: var(--panel) !important;
-  backdrop-filter: blur(8px);
-}
-
-/* Forzamos que los elementos que antes eran bg-white ahora sean crema */
-.bg-white {
-  background-color: var(--panel) !important;
-}
-
-/* Estilos para el buscador para que se vea bien sobre el crema */
-#searchInput {
-  background-color: rgba(255, 255, 255, 0.5) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Ajustes de tipografía y efectos */
-.text-brand { color: var(--brand) !important; }
-.font-display { font-family: 'Playfair Display', serif; }
-.font-body { font-family: 'Inter', sans-serif; }
-
-.nav-link:hover { color: var(--brand); transform: translateY(-2px); }
