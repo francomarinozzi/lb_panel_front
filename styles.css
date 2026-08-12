@@ -48,11 +48,25 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Las dos capas de fondo comparten caja.
+     El alto NO puede salir de `inset: 0`: eso se resuelve contra el viewport
+     actual, que en móvil cambia cada vez que se esconde o reaparece la barra
+     de direcciones. Con background-size: cover, ese cambio de alto re-encuadra
+     la imagen de golpe y se ve como un zoom brusco al scrollear.
+     lvh (large viewport height) es siempre el viewport con la barra oculta, así
+     que la caja queda quieta y la imagen nunca se re-escala. */
+  body::before,
+  body::after {
+    height: 100vh; /* respaldo: en iOS/Android vh ya es el viewport grande */
+    height: 100lvh;
+  }
+
   /* Capa 1: la foto de la cocina, fija, apenas insinuada. */
   body::before {
     content: "";
     position: fixed;
-    inset: 0;
+    top: 0;
+    inset-inline: 0;
     background-image: url("/assets/background-dashboard.jpg");
     background-size: cover;
     background-position: center;
@@ -67,7 +81,8 @@
   body::after {
     content: "";
     position: fixed;
-    inset: 0;
+    top: 0;
+    inset-inline: 0;
     background-image:
       radial-gradient(120% 90% at 50% 0%, transparent 40%, rgb(43 36 29 / 0.09) 100%),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
