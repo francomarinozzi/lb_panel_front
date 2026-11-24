@@ -147,6 +147,22 @@
             </div>
           </div>
 
+          <div>
+            <label for="flavorInput" class="eyebrow block mb-1.5">Sabores <span class="normal-case tracking-normal font-normal text-ink-3">(opcional)</span></label>
+            <div class="flex gap-2">
+              <input type="text" id="flavorInput" class="field" list="flavorSuggestions" placeholder="Ej: Ricota y nuez"
+                autocomplete="off" enterkeyhint="done">
+              <datalist id="flavorSuggestions"></datalist>
+              <button type="button" id="addFlavorBtn" class="btn btn-outline shrink-0 px-4" aria-label="Agregar sabor">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+            <p class="mt-1.5 text-xs text-ink-3">Escribí un gusto y tocá + (o Enter). Usan el mismo precio del producto.</p>
+            <ul id="flavorChips" class="mt-3 flex flex-wrap gap-2" aria-label="Sabores cargados"></ul>
+          </div>
+
           <p id="modalError" class="hidden text-sm text-coral" role="alert"></p>
 
           <div class="flex gap-3 pt-2">
@@ -183,6 +199,62 @@
 
     let products = [];
     let lastFocused = null;
+    let flavors = []; // sabores del producto que se está editando
+
+    const flavorInput = $('flavorInput');
+    const flavorChips = $('flavorChips');
+
+    /* --------------------------------------------------------------- Sabores */
+
+    const capitalize = (s) => s.charAt(0).toLocaleUpperCase('es') + s.slice(1);
+
+    function renderFlavors() {
+      flavorChips.innerHTML = flavors.map((f, i) => `
+        <li class="inline-flex items-center gap-1 pl-3 pr-1 py-1 rounded-full bg-brand-wash text-brand-deep text-sm">
+          ${esc(f)}
+          <button type="button" data-remove-flavor="${i}" class="size-6 grid place-items-center rounded-full hover:bg-white/70"
+            aria-label="Quitar ${esc(f)}">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M4.3 4.3a1 1 0 011.4 0L10 8.6l4.3-4.3a1 1 0 111.4 1.4L11.4 10l4.3 4.3a1 1 0 01-1.4 1.4L10 11.4l-4.3 4.3a1 1 0 01-1.4-1.4L8.6 10 4.3 5.7a1 1 0 010-1.4z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </li>`).join('');
+    }
+
+    function addFlavor() {
+      const value = capitalize(flavorInput.value.trim().replace(/\s+/g, ' '));
+      if (!value) return;
+      const exists = flavors.some((f) => f.toLocaleLowerCase('es') === value.toLocaleLowerCase('es'));
+      if (!exists) flavors.push(value);
+      flavorInput.value = '';
+      renderFlavors();
+      flavorInput.focus();
+    }
+
+    // Sugiere los sabores que ya se usan en otros productos.
+    function fillFlavorSuggestions() {
+      const all = [...new Set(products.flatMap((p) => p.sabores || []))]
+        .sort((a, b) => a.localeCompare(b, 'es'));
+      $('flavorSuggestions').innerHTML = all.map((f) => `<option value="${esc(f)}"></option>`).join('');
+    }
+
+    $('addFlavorBtn').addEventListener('click', addFlavor);
+
+    // Enter dentro del campo de sabor agrega el sabor, no guarda el formulario.
+    flavorInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addFlavor();
+      }
+    });
+
+    flavorChips.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-remove-flavor]');
+      if (!btn) return;
+      flavors.splice(Number(btn.dataset.removeFlavor), 1);
+      renderFlavors();
+      flavorInput.focus();
+    });
 
     const money = new Intl.NumberFormat('es-AR', {
       style: 'currency',
@@ -270,7 +342,8 @@
     function render() {
       const term = searchInput.value.trim().toLowerCase();
       const filtered = term
-        ? products.filter((p) => String(p.nombre).toLowerCase().includes(term))
+        ? products.filter((p) => String(p.nombre).toLowerCase().includes(term)
+          || (p.sabores || []).some((f) => f.toLowerCase().includes(term)))
         : products;
 
       countLabel.textContent = products.length
@@ -288,7 +361,9 @@
         <li class="py-3 flex items-center gap-3">
           <span class="min-w-0 grow">
             <span class="block text-ink truncate">${esc(p.nombre)}</span>
-            <span class="eyebrow mt-1 block">${esc(p.unidad)}</span>
+            <span class="eyebrow mt-1 block">${esc(p.unidad)}${p.sabores?.length
+              ? ` <span class="normal-case tracking-normal font-normal text-ink-3">· ${p.sabores.length} ${p.sabores.length === 1 ? 'sabor' : 'sabores'}</span>`
+              : ''}</span>
           </span>
           <span class="display tnum text-brand shrink-0">${esc(money.format(p.precio))}</span>
           <span class="flex gap-1 shrink-0">
@@ -358,10 +433,14 @@
         $('prodName').value = product.nombre;
         $('prodUnit').value = product.unidad;
         $('prodPrice').value = product.precio;
+        flavors = [...(product.sabores || [])];
       } else {
         modalTitle.textContent = 'Nuevo producto';
         productId.value = '';
+        flavors = [];
       }
+      renderFlavors();
+      fillFlavorSuggestions();
 
       modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
@@ -389,8 +468,15 @@
       const payload = {
         nombre: $('prodName').value.trim(),
         unidad: $('prodUnit').value.trim(),
-        precio: Number($('prodPrice').value)
+        precio: Number($('prodPrice').value),
+        sabores: flavors
       };
+
+      // Un sabor escrito pero sin tocar + también cuenta.
+      const pending = capitalize(flavorInput.value.trim().replace(/\s+/g, ' '));
+      if (pending && !flavors.some((f) => f.toLocaleLowerCase('es') === pending.toLocaleLowerCase('es'))) {
+        payload.sabores = [...flavors, pending];
+      }
 
       if (!payload.nombre || !payload.unidad || !Number.isFinite(payload.precio)) {
         showFieldError(modalError, 'Completá todos los campos.');

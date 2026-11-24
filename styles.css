@@ -449,6 +449,32 @@
     }
   }
 
+  /* Sabores: siempre visibles, como etiquetas escritas en tiza. */
+  .flavor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+  }
+
+  .chalk-chip {
+    padding: 0.15rem 0.6rem;
+    border: 1.5px dashed rgb(243 239 230 / 0.32);
+    border-radius: 999px;
+    font-family: "Kalam", cursive;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: rgb(243 239 230 / 0.85);
+    text-shadow: 0 0 1px rgb(255 255 255 / 0.35);
+
+    & mark {
+      background: none;
+      color: #f5d97c;
+      text-decoration: underline wavy rgb(245 217 124 / 0.7);
+      text-underline-offset: 3px;
+    }
+  }
+
   /* Cada renglón se "escribe" de izquierda a derecha en la primera carga. */
   .chalk-in {
     animation: chalk-write 0.6s cubic-bezier(0.3, 0.6, 0.3, 1) both;
