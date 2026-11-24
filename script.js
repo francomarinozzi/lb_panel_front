@@ -41,6 +41,32 @@ const year = document.getElementById('year');
 if (year) year.textContent = String(new Date().getFullYear());
 
 // ---------------------------------------------------------------------------
+// Llegada con #ancla desde otra página (ej. "Hacé tu pedido" en precios →
+// /#pedidos). El navegador salta apenas carga, pero después el contenido de
+// arriba crece (llega el adelanto de precios de la API, terminan las
+// imágenes) y la sección queda corrida. Se re-alinea cuando la página se
+// acomoda, salvo que la persona ya haya empezado a scrollear por su cuenta.
+// ---------------------------------------------------------------------------
+let userScrolled = false;
+['wheel', 'touchstart', 'keydown', 'mousedown'].forEach((type) =>
+  window.addEventListener(type, () => { userScrolled = true; }, { once: true, passive: true }));
+
+function realignHash() {
+  if (userScrolled || !location.hash) return;
+  let target = null;
+  try {
+    target = document.querySelector(decodeURIComponent(location.hash));
+  } catch {
+    return; // hash que no es un selector válido
+  }
+  // 'instant': si no, el scroll-behavior: smooth del CSS anima un salto que
+  // la persona no pidió.
+  target?.scrollIntoView({ behavior: 'instant', block: 'start' });
+}
+
+window.addEventListener('load', realignHash);
+
+// ---------------------------------------------------------------------------
 // Header con sombra apenas se scrollea.
 // ---------------------------------------------------------------------------
 const siteHeader = document.getElementById('siteHeader');
@@ -155,6 +181,8 @@ if (teaserList) {
           <span class="display text-xl text-brand-soft tnum shrink-0">${esc(money.format(p.precio))}</span>
         </li>`).join('');
       teaserList.classList.remove('hidden');
+      // El adelanto agranda la página por encima de #pedidos y #sucursales.
+      requestAnimationFrame(realignHash);
     })
     .catch(() => { /* sin adelanto: la invitación alcanza */ });
 }
