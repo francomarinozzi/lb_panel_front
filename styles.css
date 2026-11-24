@@ -487,7 +487,9 @@
       opacity: 0.3;
     }
     to {
-      clip-path: inset(0 0 0 0);
+      /* Inset negativo: la letra de tiza (Caveat) se inclina y su halo
+         sobresale de la caja; con inset(0) el último número quedaba mordido. */
+      clip-path: inset(-12px -24px -12px -12px);
       opacity: 1;
     }
   }

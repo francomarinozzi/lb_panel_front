@@ -18,20 +18,8 @@
 
 <body class="min-h-screen flex flex-col">
 
-  <header id="siteHeader" class="site-header sticky top-0 z-50 bg-crema/95 backdrop-blur-sm border-b border-rule">
-    <div class="mx-auto max-w-3xl px-4 sm:px-8">
-      <div class="flex items-center justify-between gap-4 py-3">
-        <a href="/" class="flex items-center gap-3 shrink-0">
-          <img src="/assets/lb_logo_trim.png" alt="" width="512" height="435" class="w-11 sm:w-13 h-auto">
-          <span class="leading-none">
-            <span class="display block text-[1.0625rem] sm:text-xl">La Blanquita del Barrio</span>
-            <span class="eyebrow mt-1 block text-[0.625rem]">Pastas frescas artesanales</span>
-          </span>
-        </a>
-        <a href="/" class="nav-link text-[0.9375rem] whitespace-nowrap shrink-0">&larr; Volver</a>
-      </div>
-    </div>
-  </header>
+  <!-- Sin header: la pizarra es la protagonista. Para volver están el pie y
+       los botones de abajo. -->
 
   <!-- Tenedor con spaghetti enroscado; de ahí cuelga un fideo que se estira
        con el scroll. Lo arma el JS. Decorativo: el lector de pantalla lo ignora. -->
@@ -231,7 +219,7 @@
     /* ======================================================================
        Tenedor + fideo
        Arriba, un tenedor con spaghetti enroscado en los dientes (el mango se
-       pierde detrás del header, como si alguien lo sostuviera). De ahí cuelga
+       sale por arriba de la pantalla, como si alguien lo sostuviera). De ahí cuelga
        un manojo de 4 hebras de largos distintos que se estiran al bajar:
        crecen, se afinan y la onda se afloja (la masa tirante cae más derecha).
        Si se scrollea rápido, se bambolean.
@@ -242,7 +230,6 @@
     const noodle = (() => {
       const NS = 'http://www.w3.org/2000/svg';
       const svg = document.getElementById('noodle');
-      const header = document.getElementById('siteHeader');
       const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       const el = (name, attrs = {}, parent) => {
@@ -336,6 +323,7 @@
         coilLayer(el('g', { transform: tr }, frontCoils), `M ${32 + c.rx} ${c.y} A ${c.rx} ${c.ry} 0 0 1 ${32 - c.rx} ${c.y}`);
       });
       const NEST_BOTTOM = 49; // de acá salen las hebras, en unidades locales
+      const FORK_Y = 24;      // px que baja el tenedor desde el borde de arriba
 
       // Pasta servida en el plato: una montañita de vueltas, salsa y albahaca.
       const ring = (cx, cy, rx, ry) =>
@@ -364,8 +352,9 @@
 
       function measure() {
         // Un <svg> no se estira con top+bottom como un div: el alto va explícito.
-        svg.style.top = `${header.offsetHeight}px`;
-        svg.style.height = `${Math.max(0, innerHeight - header.offsetHeight - 10)}px`;
+        // Sin header: el tenedor cuelga desde el borde de arriba.
+        svg.style.top = '0px';
+        svg.style.height = `${Math.max(0, innerHeight - 10)}px`;
         const r = svg.getBoundingClientRect();
         w = r.width;
         h = r.height;
@@ -377,7 +366,8 @@
         // angosta, pero el tenedor tiene que leerse como tenedor.
         s = narrow ? 0.95 : 1.15;
         svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-        forkG.setAttribute('transform', `translate(${(cx - 32 * s).toFixed(2)} 0) scale(${s})`);
+        // Un poco bajado para que se vea algo del mango saliendo de arriba.
+        forkG.setAttribute('transform', `translate(${(cx - 32 * s).toFixed(2)} ${FORK_Y}) scale(${s})`);
         // Plato centrado justo debajo del tenedor, así los fideos caen derecho.
         // En móvil queda medio cortado por el borde izquierdo, a propósito.
         ps = narrow ? 1 : 1.25;
@@ -468,7 +458,7 @@
       }
 
       function draw() {
-        const y0 = NEST_BOTTOM * s - 4;
+        const y0 = FORK_Y + NEST_BOTTOM * s - 4;
         const avail = h - y0;
         const baseHalf = (narrow ? 2.5 : 3.4) * (1 - 0.2 * shown); // se afina al estirarse
         placePlate();
@@ -531,11 +521,6 @@
       // El alto de la página cambia cuando llega la lista o se filtra.
       return { refresh() { requestAnimationFrame(() => { measure(); kick(); }); } };
     })();
-
-    const siteHeader = document.getElementById('siteHeader');
-    const markScrolled = () => { siteHeader.dataset.scrolled = String(scrollY > 8); };
-    addEventListener('scroll', markScrolled, { passive: true });
-    markScrolled();
 
     searchInput.addEventListener('input', applyFilter);
     load();
