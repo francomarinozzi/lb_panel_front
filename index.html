@@ -10,10 +10,14 @@
   <meta name="theme-color" content="#EBE6DA">
   <link rel="icon" href="/assets/lb_logo_trim.png" type="image/png">
 
+  <!-- Marca que hay JS antes de pintar: las animaciones de entrada solo ocultan
+       contenido si después hay quien lo vuelva a mostrar. -->
+  <script>document.documentElement.classList.add('js')</script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,700&family=Inter:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="/styles.css">
 </head>
 
@@ -26,7 +30,7 @@
   <!-- ===================================================================
        Header
        =================================================================== -->
-  <header class="sticky top-0 z-50 bg-crema/95 backdrop-blur-sm border-b border-rule">
+  <header id="siteHeader" class="site-header sticky top-0 z-50 bg-crema/95 backdrop-blur-sm border-b border-rule">
     <div class="mx-auto max-w-5xl px-5 sm:px-8">
       <div class="flex items-center justify-between gap-4 py-3">
 
@@ -42,7 +46,7 @@
         <nav class="hidden md:flex items-center gap-7 text-[0.9375rem]" aria-label="Principal">
           <a href="/precios.html" class="nav-link">Lista de precios</a>
           <a href="#sucursales" class="nav-link">Sucursales</a>
-          <a href="#pedidos" class="btn btn-brand py-2.5 px-5 text-sm">Pedidos</a>
+          <a href="#pedidos" class="btn btn-brand py-2.5 px-5 text-sm">Hacé tu pedido</a>
         </nav>
 
         <button id="menuBtn" type="button"
@@ -57,14 +61,14 @@
     </div>
 
     <!-- Absoluto, no en flujo: si empujara el contenido, al cerrarse el menú
-         la página se correría 212px y los saltos con # quedarían pasados. -->
+         la página se correría y los saltos con # quedarían pasados. -->
     <div id="mobileMenu" class="menu-panel md:hidden absolute inset-x-0 top-full bg-crema shadow-[0_10px_18px_-10px_rgb(43_36_29_/_0.3)]"
       data-open="false">
       <div>
         <nav class="mx-auto max-w-5xl px-5 py-2 border-b border-rule" aria-label="Principal (móvil)">
           <a href="/precios.html" class="block py-3 border-b border-rule/60">Lista de precios</a>
           <a href="#sucursales" class="block py-3 border-b border-rule/60">Sucursales</a>
-          <a href="#pedidos" class="block py-3">Pedidos</a>
+          <a href="#pedidos" class="block py-3">Hacé tu pedido</a>
         </nav>
       </div>
     </div>
@@ -75,53 +79,83 @@
     <!-- =================================================================
          Hero
          ================================================================= -->
-    <section class="mx-auto max-w-5xl px-5 sm:px-8 pt-12 pb-14 sm:pt-20 sm:pb-20">
-      <div class="grid gap-10 md:grid-cols-[1.05fr_1fr] md:gap-14 md:items-center">
+    <section class="mx-auto max-w-5xl px-5 sm:px-8 pt-12 pb-16 sm:pt-20 sm:pb-24">
+      <div class="grid gap-14 md:grid-cols-[1.1fr_1fr] md:gap-16 md:items-center">
 
         <div>
-          <p class="eyebrow">Hurlingham &nbsp;·&nbsp; Haedo</p>
+          <p class="eyebrow text-brand reveal">Hurlingham &nbsp;·&nbsp; Haedo</p>
 
-          <h1 class="display mt-4 text-[2.75rem] sm:text-6xl">
+          <h1 class="display mt-5 text-[3.25rem] sm:text-7xl reveal" style="--d:80ms">
             La Blanquita<br>
-            <span class="text-brand">del Barrio</span>
+            <em class="italic font-medium text-brand">del Barrio</em>
           </h1>
 
-          <div class="ornament my-6 max-w-[13rem]"><span></span></div>
+          <div class="ornament my-7 max-w-[13rem] reveal" style="--d:160ms"><span></span></div>
 
-          <p class="prose-warm text-lg max-w-md">
-            Pastas frescas y artesanales.
+          <p class="prose-warm text-lg sm:text-xl max-w-md reveal" style="--d:220ms">
+            Pastas frescas y artesanales, hechas todos los días como hace más de 50 años.
           </p>
 
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href="/precios.html" class="btn btn-brand">Ver lista de precios</a>
+          <div class="mt-9 flex flex-wrap gap-3 reveal" style="--d:300ms">
+            <a href="/precios.html" class="btn btn-brand">
+              Ver lista de precios
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10.3 4.3a1 1 0 011.4 0l5 5a1 1 0 010 1.4l-5 5a1 1 0 01-1.4-1.4l3.29-3.3H4a1 1 0 110-2h9.59l-3.3-3.3a1 1 0 010-1.4z" clip-rule="evenodd" />
+              </svg>
+            </a>
             <a href="#sucursales" class="btn btn-outline">Dónde estamos</a>
           </div>
         </div>
 
-        <!-- Foto montada como una copia pegada en la página -->
-        <figure class="panel p-2.5 sm:p-3 md:rotate-[0.6deg]">
-          <img src="/assets/background-dashboard.jpg" alt="Ravioles frescos sobre la tabla, junto a la caja de La Blanquita del Barrio"
-            width="2048" height="2048" loading="eager"
-            class="w-full aspect-[4/5] md:aspect-[4/5] object-cover rounded-[3px]"
-            style="object-position: 26% 46%">
-        </figure>
+        <!-- Foto montada como una copia pegada con cinta, con un sello encima -->
+        <div class="relative reveal" style="--d:200ms">
+          <figure class="photo-frame md:rotate-[1.2deg]">
+            <img src="/assets/background-dashboard.jpg"
+              alt="Ravioles frescos sobre la tabla, junto a la caja de La Blanquita del Barrio" width="2048"
+              height="2048" loading="eager" class="w-full aspect-[4/5] object-cover rounded-[2px]"
+              style="object-position: 26% 46%">
+          </figure>
+
+          <div class="seal absolute -left-5 -bottom-7 sm:-left-9 sm:-bottom-9" aria-hidden="true">
+            <svg viewBox="0 0 120 120">
+              <defs>
+                <path id="sealPath" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0" />
+              </defs>
+              <text font-family="Inter, sans-serif" font-size="10.5" font-weight="600" letter-spacing="3.1"
+                fill="currentColor">
+                <textPath href="#sealPath">PASTAS FRESCAS · HECHAS A MANO ·</textPath>
+              </text>
+            </svg>
+            <span class="seal-core">+50<br><span class="text-[0.7rem] not-italic font-sans font-semibold tracking-[0.15em]">AÑOS</span></span>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- =================================================================
-         Banda de datos — sin iconos ni círculos, solo filetes
+         Cinta de pastas (decorativa; el contenido se duplica para el loop)
          ================================================================= -->
-    <section class="border-y border-rule bg-crema/70" aria-label="En resumen">
+    <div class="ribbon" aria-hidden="true">
+      <div class="ribbon-track">
+        <span>Ravioles</span><span>Sorrentinos</span><span>Ñoquis</span><span>Tallarines</span><span>Tortelettis</span><span>Canelones</span><span>Lasagna</span><span>Capelettis</span>
+        <span>Ravioles</span><span>Sorrentinos</span><span>Ñoquis</span><span>Tallarines</span><span>Tortelettis</span><span>Canelones</span><span>Lasagna</span><span>Capelettis</span>
+      </div>
+    </div>
+
+    <!-- =================================================================
+         Banda de datos
+         ================================================================= -->
+    <section class="border-b border-rule bg-crema/70" aria-label="En resumen">
       <dl class="mx-auto max-w-5xl px-5 sm:px-8 grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-rule">
-        <div class="py-6 sm:px-6 sm:first:pl-0">
+        <div class="py-7 sm:px-6 sm:first:pl-0 reveal">
           <dt class="eyebrow">Sucursales</dt>
           <dd class="display mt-2 text-2xl">Hurlingham y Haedo</dd>
         </div>
-        <div class="py-6 sm:px-6">
+        <div class="py-7 sm:px-6 reveal" style="--d:90ms">
           <dt class="eyebrow">Entrega</dt>
           <dd class="display mt-2 text-2xl">Retiro en mostrador</dd>
         </div>
-        <div class="py-6 sm:px-6 sm:last:pr-0">
+        <div class="py-7 sm:px-6 sm:last:pr-0 reveal" style="--d:180ms">
           <dt class="eyebrow">En el barrio</dt>
           <dd class="display mt-2 text-2xl">Más de 50 años</dd>
         </div>
@@ -129,67 +163,92 @@
     </section>
 
     <!-- =================================================================
-         Lista de precios
+         Lista de precios — adelanto en vivo
          ================================================================= -->
-    <section class="mx-auto max-w-5xl px-5 sm:px-8 py-14 sm:py-20">
-      <!-- Solo título + CTA: el padding baja para que no quede aire de sobra. -->
-      <div class="panel px-6 py-9 sm:px-12 sm:py-11 text-center">
-        <h2 class="display text-3xl sm:text-4xl">Lista de precios</h2>
-        <a href="/precios.html" class="btn btn-brand mt-6">Ver la lista completa</a>
-      </div>
-    </section>
-
-    <!-- =================================================================
-         Pedidos
-         Va antes de Sucursales a propósito: el CTA "Pedidos" del header cae
-         acá, y los botones de WhatsApp de cada sucursal quedan justo debajo.
-         ================================================================= -->
-    <section id="pedidos" class="border-t border-rule bg-crema/70">
-      <div class="mx-auto max-w-5xl px-5 sm:px-8 py-14 sm:py-20">
-        <div class="grid gap-8 md:grid-cols-[auto_1fr] md:gap-14">
-          <div class="md:w-56">
-            <p class="eyebrow">Pedidos</p>
-            <div class="rule-double mt-3 w-16"></div>
+    <section class="mx-auto max-w-5xl px-5 sm:px-8 py-16 sm:py-24">
+      <div class="teaser reveal px-6 py-10 sm:px-12 sm:py-14">
+        <div class="grid gap-10 md:grid-cols-[1fr_1.1fr] md:items-center">
+          <div>
+            <p class="eyebrow text-brand-soft">Precios actualizados</p>
+            <h2 class="display mt-3 text-4xl sm:text-5xl text-crema">
+              Lista de <em class="italic font-medium text-brand-soft">precios</em>
+            </h2>
+            <p class="mt-4 text-crema/70 max-w-sm">
+              Consultá cuánto sale cada pasta antes de venir o de mandarnos tu pedido.
+            </p>
+            <a href="/precios.html" class="btn mt-8 bg-crema text-ink hover:bg-white">Ver la lista completa</a>
           </div>
 
-          <div class="max-w-xl">
-            <h2 class="display text-3xl sm:text-4xl">Retiro en mostrador</h2>
-            <ol class="mt-6 space-y-5">
-              <li class="leader items-start">
-                <span class="display text-brand text-xl w-7 shrink-0 tnum">01</span>
-                <span class="prose-warm">Elegí tu sucursal acá abajo y escribinos por WhatsApp con tu pedido.</span>
-              </li>
-              <li class="leader items-start">
-                <span class="display text-brand text-xl w-7 shrink-0 tnum">02</span>
-                <span class="prose-warm">Lo preparamos y te confirmamos cuándo pasarlo a buscar.</span>
-              </li>
-              <li class="leader items-start">
-                <span class="display text-brand text-xl w-7 shrink-0 tnum">03</span>
-                <span class="prose-warm">Lo retirás en el mostrador.</span>
-              </li>
-            </ol>
-          </div>
+          <!-- Se llena con algunos productos reales; si la API no responde,
+               la columna se oculta y queda solo la invitación. -->
+          <ul id="teaserList" class="hidden space-y-1" aria-label="Algunos precios"></ul>
         </div>
       </div>
     </section>
 
     <!-- =================================================================
-         Sucursales
+         Pedidos
+         Va antes de Sucursales a propósito: el CTA del header cae acá, y los
+         botones de WhatsApp de cada sucursal quedan justo debajo.
          ================================================================= -->
-    <section id="sucursales" class="mx-auto max-w-5xl px-5 sm:px-8 py-14 sm:py-20">
-      <p class="eyebrow">Dónde estamos</p>
-      <h2 class="display mt-3 text-3xl sm:text-4xl">Sucursales</h2>
+    <section id="pedidos" class="border-y border-rule bg-crema/70">
+      <div class="mx-auto max-w-5xl px-5 sm:px-8 py-16 sm:py-24">
+        <div class="text-center reveal">
+          <p class="eyebrow">Pedidos</p>
+          <h2 class="display mt-3 text-4xl sm:text-5xl">Pedí y <em class="italic font-medium text-brand">retirá</em></h2>
+          <div class="ornament mt-6 mx-auto max-w-[13rem]"><span></span></div>
+        </div>
 
-      <div class="mt-8 grid gap-5 md:grid-cols-2">
+        <ol class="mt-12 grid gap-5 md:grid-cols-3">
+          <li class="step-card reveal">
+            <span class="step-n">01</span>
+            <h3 class="display mt-4 text-xl">Escribinos</h3>
+            <p class="prose-warm mt-2 text-[0.9375rem]">Elegí tu sucursal acá abajo y mandanos tu pedido por WhatsApp.</p>
+          </li>
+          <li class="step-card reveal" style="--d:100ms">
+            <span class="step-n">02</span>
+            <h3 class="display mt-4 text-xl">Lo preparamos</h3>
+            <p class="prose-warm mt-2 text-[0.9375rem]">Te confirmamos cuándo está listo para pasar a buscar.</p>
+          </li>
+          <li class="step-card reveal" style="--d:200ms">
+            <span class="step-n">03</span>
+            <h3 class="display mt-4 text-xl">Lo retirás</h3>
+            <p class="prose-warm mt-2 text-[0.9375rem]">Pasás por el mostrador y te lo llevás fresquito.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
 
-        <article class="panel p-6 sm:p-8 flex flex-col">
-          <h3 class="display text-2xl">Hurlingham</h3>
+    <!-- =================================================================
+         Sucursales
+         Los horarios viven en data-hours (JSON por día, 0 = domingo) y el JS
+         calcula en vivo si está abierto. Si cambian, se tocan en los dos
+         lugares: el texto visible y el data-hours.
+         ================================================================= -->
+    <section id="sucursales" class="mx-auto max-w-5xl px-5 sm:px-8 py-16 sm:py-24">
+      <div class="reveal">
+        <p class="eyebrow">Dónde estamos</p>
+        <h2 class="display mt-3 text-4xl sm:text-5xl">Sucursales</h2>
+      </div>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-2">
+
+        <article class="panel branch-card p-6 sm:p-8 flex flex-col reveal"
+          data-hours='{"0":[[8,13]],"1":[],"2":[[8,13],[17,20]],"3":[[8,13],[17,20]],"4":[[8,13],[17,20]],"5":[[8,13],[17,20]],"6":[[8,13],[17,20]]}'>
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="display text-3xl">Hurlingham</h3>
+            <span class="status" data-status aria-live="polite"></span>
+          </div>
           <div class="ornament my-5"><span></span></div>
 
           <dl class="space-y-4 text-[0.9375rem] grow">
             <div>
               <dt class="eyebrow">Dirección</dt>
-              <dd class="prose-warm mt-1">Av. Gral. Pedro Díaz 568</dd>
+              <dd class="mt-1 flex flex-wrap items-baseline gap-x-3">
+                <span class="prose-warm">Av. Gral. Pedro Díaz 568</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=Av.+Gral.+Pedro+D%C3%ADaz+568%2C+Hurlingham%2C+Buenos+Aires"
+                  target="_blank" rel="noopener noreferrer" class="text-sm text-brand underline decoration-brand-soft/50 underline-offset-4 hover:decoration-brand">Cómo llegar ↗</a>
+              </dd>
             </div>
             <div>
               <dt class="eyebrow">Horarios</dt>
@@ -220,14 +279,22 @@
           </a>
         </article>
 
-        <article class="panel p-6 sm:p-8 flex flex-col">
-          <h3 class="display text-2xl">Haedo</h3>
+        <article class="panel branch-card p-6 sm:p-8 flex flex-col reveal" style="--d:120ms"
+          data-hours='{"0":[[8,13]],"1":[[8,13],[17,20]],"2":[[8,13],[17,20]],"3":[[8,13],[17,20]],"4":[[8,13],[17,20]],"5":[[8,13],[17,20]],"6":[[8,13],[17,20]]}'>
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="display text-3xl">Haedo</h3>
+            <span class="status" data-status aria-live="polite"></span>
+          </div>
           <div class="ornament my-5"><span></span></div>
 
           <dl class="space-y-4 text-[0.9375rem] grow">
             <div>
               <dt class="eyebrow">Dirección</dt>
-              <dd class="prose-warm mt-1">Fasola 693</dd>
+              <dd class="mt-1 flex flex-wrap items-baseline gap-x-3">
+                <span class="prose-warm">Fasola 693</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=Fasola+693%2C+Haedo%2C+Buenos+Aires"
+                  target="_blank" rel="noopener noreferrer" class="text-sm text-brand underline decoration-brand-soft/50 underline-offset-4 hover:decoration-brand">Cómo llegar ↗</a>
+              </dd>
             </div>
             <div>
               <dt class="eyebrow">Horarios</dt>
@@ -264,12 +331,12 @@
        Footer
        =================================================================== -->
   <footer class="border-t border-rule bg-crema">
-    <div class="mx-auto max-w-5xl px-5 sm:px-8 py-10">
+    <div class="mx-auto max-w-5xl px-5 sm:px-8 py-12">
       <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
         <div class="flex items-center gap-3">
-          <img src="/assets/lb_logo_trim.png" alt="" width="512" height="435" class="w-10 h-auto" loading="lazy">
+          <img src="/assets/lb_logo_trim.png" alt="" width="512" height="435" class="w-12 h-auto" loading="lazy">
           <span>
-            <span class="display block text-base">La Blanquita del Barrio</span>
+            <span class="display block text-lg">La Blanquita del Barrio</span>
             <span class="eyebrow mt-1 block text-[0.625rem]">Pastas frescas artesanales</span>
           </span>
         </div>
@@ -281,9 +348,9 @@
         </nav>
       </div>
 
-      <div class="ornament my-7"><span></span></div>
+      <div class="ornament my-8"><span></span></div>
 
-      <p class="text-xs text-ink-3">© <span id="year">2026</span> La Blanquita del Barrio</p>
+      <p class="text-xs text-ink-3">© <span id="year">2026</span> La Blanquita del Barrio &nbsp;·&nbsp; Hurlingham y Haedo</p>
     </div>
   </footer>
 

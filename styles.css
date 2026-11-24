@@ -292,6 +292,427 @@
     border-bottom: 1px dotted var(--color-rule);
   }
 
+  /* ========================================================================
+     Pizarra de almacén (precios.html) — pensada primero para móvil.
+     ======================================================================== */
+
+  /* Marco de madera: vetas finas + degradé de tabla, con biselado. */
+  .board {
+    position: relative;
+    padding: 12px 12px 0;
+    border-radius: 12px;
+    background:
+      repeating-linear-gradient(92deg, rgb(0 0 0 / 0.07) 0 1px, transparent 1px 6px, rgb(255 255 255 / 0.04) 6px 7px, transparent 7px 13px),
+      linear-gradient(180deg, #a06f3f 0%, #7f522a 45%, #8f5f33 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      inset 0 -2px 0 rgb(0 0 0 / 0.3),
+      0 24px 40px -22px rgb(43 36 29 / 0.75),
+      0 3px 8px -2px rgb(43 36 29 / 0.25);
+  }
+
+  /* La pizarra: verde oscuro casi negro, con polvo de tiza y borrones. */
+  .slate {
+    position: relative;
+    border-radius: 4px;
+    color: #f3efe6;
+    background:
+      radial-gradient(60% 40% at 25% 15%, rgb(255 255 255 / 0.07), transparent 70%),
+      radial-gradient(50% 35% at 80% 70%, rgb(255 255 255 / 0.05), transparent 70%),
+      radial-gradient(40% 25% at 30% 90%, rgb(255 255 255 / 0.04), transparent 70%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+      #26302b;
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 0.45),
+      inset 0 6px 18px rgb(0 0 0 / 0.45);
+  }
+
+  /* Repisa con una tiza y un borrador. */
+  .tray {
+    position: relative;
+    height: 22px;
+
+    &::before {
+      /* tiza */
+      content: "";
+      position: absolute;
+      left: 22%;
+      top: 7px;
+      width: 34px;
+      height: 7px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #ffffff, #e6e1d6);
+      box-shadow: 0 1px 1px rgb(0 0 0 / 0.35);
+      rotate: -4deg;
+    }
+
+    &::after {
+      /* borrador */
+      content: "";
+      position: absolute;
+      right: 18%;
+      top: 3px;
+      width: 50px;
+      height: 13px;
+      border-radius: 3px;
+      background:
+        linear-gradient(180deg, #3b2a1d 0 55%, #d9d4c8 55% 100%);
+      box-shadow: 0 2px 2px rgb(0 0 0 / 0.35);
+    }
+  }
+
+  /* Letras de tiza: un halo apenas difuso imita el polvo. */
+  .chalk {
+    font-family: "Kalam", "Comic Sans MS", cursive;
+    text-shadow:
+      0 0 1px rgb(255 255 255 / 0.45),
+      0 0 8px rgb(255 255 255 / 0.08);
+  }
+
+  .chalk-script {
+    font-family: "Caveat", "Kalam", cursive;
+    text-shadow:
+      0 0 1px rgb(255 255 255 / 0.4),
+      0 0 8px rgb(255 255 255 / 0.08);
+  }
+
+  .chalk-yellow {
+    color: #f5d97c;
+  }
+
+  .chalk-pink {
+    color: #f3b0ad;
+  }
+
+  .chalk-dim {
+    color: rgb(243 239 230 / 0.55);
+  }
+
+  /* Subrayado hecho a mano que se "dibuja" al cargar. */
+  .chalk-underline path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: chalk-draw 0.9s 0.2s ease-out forwards;
+  }
+
+  @keyframes chalk-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .chalk-search {
+    width: 100%;
+    padding: 0.7rem 0.9rem 0.7rem 2.5rem;
+    border: 1.5px dashed rgb(243 239 230 / 0.3);
+    border-radius: 8px;
+    background: rgb(255 255 255 / 0.05);
+    color: #f3efe6;
+    font-family: "Kalam", cursive;
+    font-size: 1.0625rem; /* ≥16px: iOS no hace zoom al enfocar */
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &::placeholder {
+      color: rgb(243 239 230 / 0.45);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #f5d97c;
+      background: rgb(255 255 255 / 0.08);
+    }
+
+    /* La cruz nativa de type=search desentona sobre la pizarra. */
+    &::-webkit-search-cancel-button {
+      filter: invert(1) opacity(0.6);
+    }
+  }
+
+  .chalk-row {
+    padding-block: 0.85rem;
+    border-bottom: 1.5px dashed rgb(243 239 230 / 0.13);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    & .leader-fill {
+      border-bottom: 2px dotted rgb(243 239 230 / 0.28);
+      translate: 0 -0.35rem;
+    }
+
+    & mark {
+      background: none;
+      color: #f5d97c;
+      text-decoration: underline wavy rgb(245 217 124 / 0.7);
+      text-underline-offset: 4px;
+    }
+  }
+
+  /* Cada renglón se "escribe" de izquierda a derecha en la primera carga. */
+  .chalk-in {
+    animation: chalk-write 0.6s cubic-bezier(0.3, 0.6, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms + 0.25s);
+  }
+
+  @keyframes chalk-write {
+    from {
+      clip-path: inset(0 100% 0 0);
+      opacity: 0.3;
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+      opacity: 1;
+    }
+  }
+
+  /* ---- Tenedor + fideo: indicador de scroll ------------------------------
+     Franja fija a la izquierda. En móvil cuelga sobre el marco de la pizarra;
+     en escritorio, al costado. Va debajo del header (z 50). */
+  .noodle {
+    position: fixed;
+    top: 4.5rem;
+    left: 0;
+    /* Más ancho que la franja del fideo (52px): el plato del final necesita
+       lugar. Es transparente y no captura toques. */
+    width: 160px;
+    height: calc(100vh - 4.5rem - 10px); /* el JS lo ajusta al header real */
+    z-index: 45;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  @media (min-width: 48rem) {
+    .noodle {
+      /* La franja (64px) queda a 68px del borde izquierdo del SVG. */
+      left: calc(50% - 18rem - 152px);
+      width: 220px;
+    }
+  }
+
+  /* ========================================================================
+     Detalles compartidos de la parte pública
+     ======================================================================== */
+
+  /* Header: gana sombra apenas se despega del tope. */
+  .site-header {
+    transition: box-shadow 0.25s, background-color 0.25s;
+
+    &[data-scrolled="true"] {
+      box-shadow: 0 10px 24px -18px rgb(43 36 29 / 0.45);
+    }
+  }
+
+  /* Entrada al hacer scroll. Solo se oculta si hay JS (clase .js en <html>),
+     así sin JS el contenido nunca queda invisible. */
+  .js .reveal {
+    opacity: 0;
+    translate: 0 18px;
+    transition:
+      opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+      translate 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--d, 0ms);
+
+    &.is-in {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* Foto montada con dos tiras de cinta de papel. */
+  .photo-frame {
+    position: relative;
+    padding: 0.75rem;
+    background: #fbf9f4;
+    border: 1px solid var(--color-rule);
+    border-radius: 4px;
+    box-shadow: 0 30px 50px -30px rgb(43 36 29 / 0.5), 0 2px 6px rgb(43 36 29 / 0.08);
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      width: 92px;
+      height: 26px;
+      background: rgb(235 230 218 / 0.82);
+      border: 1px solid rgb(207 197 178 / 0.6);
+      box-shadow: 0 1px 2px rgb(43 36 29 / 0.08);
+      z-index: 2;
+    }
+    &::before {
+      top: -12px;
+      left: 18px;
+      rotate: -8deg;
+    }
+    &::after {
+      bottom: -12px;
+      right: 18px;
+      rotate: -6deg;
+    }
+  }
+
+  /* Sello circular giratorio con texto en ronda. */
+  .seal {
+    width: 7.5rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: var(--color-crema);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 14px 30px -14px rgb(122 82 34 / 0.75);
+
+    & svg {
+      grid-area: 1 / 1;
+      width: 100%;
+      height: 100%;
+      animation: seal-spin 22s linear infinite;
+    }
+
+    & .seal-core {
+      grid-area: 1 / 1;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 700;
+      font-size: 1.75rem;
+      line-height: 1;
+      text-align: center;
+    }
+  }
+
+  @keyframes seal-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  /* Cinta con nombres de pastas que se desplaza en loop. */
+  .ribbon {
+    overflow: hidden;
+    background: var(--color-brand);
+    color: var(--color-crema);
+    border-block: 1px solid var(--color-brand-deep);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+
+    & .ribbon-track {
+      display: flex;
+      width: max-content;
+      animation: ribbon 38s linear infinite;
+    }
+
+    & span {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0.95rem 0 0.95rem 1.5rem;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.375rem;
+      white-space: nowrap;
+    }
+
+    & span::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      rotate: 45deg;
+      background: var(--color-coral);
+    }
+  }
+
+  @keyframes ribbon {
+    to {
+      translate: -50% 0;
+    }
+  }
+
+  /* Tarjeta oscura para destacar la lista de precios en la landing. */
+  .teaser {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(90% 120% at 100% 0%, rgb(153 104 45 / 0.45), transparent 60%),
+      var(--color-ink);
+    color: var(--color-crema);
+    border-radius: 14px;
+    box-shadow: 0 30px 60px -30px rgb(43 36 29 / 0.7);
+
+    & .leader-fill {
+      border-bottom-color: rgb(235 230 218 / 0.25);
+    }
+  }
+
+  .step-card {
+    position: relative;
+    padding: 1.75rem 1.5rem 1.5rem;
+    background: color-mix(in srgb, var(--color-crema) 70%, white);
+    border: 1px solid var(--color-rule);
+    border-radius: 10px;
+    transition: translate 0.25s, box-shadow 0.25s;
+
+    &:hover {
+      translate: 0 -3px;
+      box-shadow: 0 16px 30px -22px rgb(43 36 29 / 0.5);
+    }
+
+    & .step-n {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 700;
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--color-brand-soft);
+    }
+  }
+
+  /* Estado de la sucursal (abierto / cerrado), calculado en vivo. */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--color-ink-3) 14%, transparent);
+    color: var(--color-ink-2);
+
+    &::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    &[data-open="true"] {
+      background: color-mix(in srgb, var(--color-verde) 14%, transparent);
+      color: var(--color-verde-deep);
+
+      &::before {
+        animation: pulse 1.8s ease-out infinite;
+      }
+    }
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgb(14 139 92 / 0.55);
+    }
+    100% {
+      box-shadow: 0 0 0 8px rgb(14 139 92 / 0);
+    }
+  }
+
+  .branch-card {
+    transition: translate 0.25s, box-shadow 0.25s;
+
+    &:hover {
+      translate: 0 -3px;
+      box-shadow: 0 22px 40px -26px rgb(43 36 29 / 0.55);
+    }
+  }
+
   .tnum {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";

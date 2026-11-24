@@ -39,3 +39,122 @@ if (menuBtn && mobileMenu) {
 
 const year = document.getElementById('year');
 if (year) year.textContent = String(new Date().getFullYear());
+
+// ---------------------------------------------------------------------------
+// Header con sombra apenas se scrollea.
+// ---------------------------------------------------------------------------
+const siteHeader = document.getElementById('siteHeader');
+if (siteHeader) {
+  const mark = () => { siteHeader.dataset.scrolled = String(window.scrollY > 8); };
+  window.addEventListener('scroll', mark, { passive: true });
+  mark();
+}
+
+// ---------------------------------------------------------------------------
+// Entradas al hacer scroll (.reveal). Sin IntersectionObserver, se muestra todo.
+// ---------------------------------------------------------------------------
+const reveals = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-in');
+      io.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  reveals.forEach((el) => io.observe(el));
+} else {
+  reveals.forEach((el) => el.classList.add('is-in'));
+}
+
+// ---------------------------------------------------------------------------
+// Sucursales: "Abierto ahora" / "Cerrado" en vivo, siempre en hora argentina
+// (aunque quien mire esté en otro huso).
+// ---------------------------------------------------------------------------
+const DAYS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+
+function nowInBuenosAires() {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    weekday: 'short',
+    hour: 'numeric',
+    minute: 'numeric',
+    hourCycle: 'h23',
+  }).formatToParts(new Date());
+  const get = (type) => parts.find((p) => p.type === type)?.value;
+  const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
+  return { day, hour: Number(get('hour')) + Number(get('minute')) / 60 };
+}
+
+function branchStatus(hours) {
+  const { day, hour } = nowInBuenosAires();
+  const today = hours[day] || [];
+
+  const open = today.find(([from, to]) => hour >= from && hour < to);
+  if (open) return { open: true, text: `Abierto · cierra ${open[1]} h` };
+
+  // Próxima apertura: más tarde hoy o en los próximos días.
+  const later = today.find(([from]) => from > hour);
+  if (later) return { open: false, text: `Cerrado · abre ${later[0]} h` };
+  for (let i = 1; i <= 7; i++) {
+    const d = (day + i) % 7;
+    const first = (hours[d] || [])[0];
+    if (first) {
+      const when = i === 1 ? 'mañana' : `el ${DAYS[d]}`;
+      return { open: false, text: `Cerrado · abre ${when} ${first[0]} h` };
+    }
+  }
+  return { open: false, text: 'Cerrado' };
+}
+
+const branches = document.querySelectorAll('[data-hours]');
+function paintStatuses() {
+  branches.forEach((card) => {
+    const badge = card.querySelector('[data-status]');
+    if (!badge) return;
+    try {
+      const { open, text } = branchStatus(JSON.parse(card.dataset.hours));
+      badge.dataset.open = String(open);
+      badge.textContent = text;
+    } catch {
+      badge.remove();
+    }
+  });
+}
+if (branches.length) {
+  paintStatuses();
+  setInterval(paintStatuses, 60_000);
+}
+
+// ---------------------------------------------------------------------------
+// Adelanto de la lista de precios: algunos productos reales. Si la API falla
+// o no hay productos, la columna sigue oculta y no se nota nada.
+// ---------------------------------------------------------------------------
+const teaserList = document.getElementById('teaserList');
+if (teaserList) {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const money = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+
+  fetch(`${API_URL}/products`)
+    .then((res) => (res.ok ? res.json() : []))
+    .then((products) => {
+      if (!Array.isArray(products) || !products.length) return;
+      const picks = [...products]
+        .sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'))
+        .slice(0, 4);
+      teaserList.innerHTML = picks.map((p) => `
+        <li class="leader py-3 border-b border-crema/10 last:border-0">
+          <span class="min-w-0">
+            <span class="block text-crema text-[1.0625rem]">${esc(p.nombre)}</span>
+            <span class="eyebrow text-crema/45 mt-1 block">${esc(p.unidad)}</span>
+          </span>
+          <span class="leader-fill"></span>
+          <span class="display text-xl text-brand-soft tnum shrink-0">${esc(money.format(p.precio))}</span>
+        </li>`).join('');
+      teaserList.classList.remove('hidden');
+    })
+    .catch(() => { /* sin adelanto: la invitación alcanza */ });
+}
