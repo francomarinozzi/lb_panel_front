@@ -168,9 +168,8 @@ if (teaserList) {
     .then((res) => (res.ok ? res.json() : []))
     .then((products) => {
       if (!Array.isArray(products) || !products.length) return;
-      const picks = [...products]
-        .sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'))
-        .slice(0, 4);
+      // Los primeros 4 según el orden elegido en el admin.
+      const picks = products.slice(0, 4);
       teaserList.innerHTML = picks.map((p) => `
         <li class="leader py-3 border-b border-crema/10 last:border-0">
           <span class="min-w-0">

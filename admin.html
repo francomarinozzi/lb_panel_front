@@ -72,6 +72,13 @@
           <p class="eyebrow">Catálogo</p>
           <h2 class="display mt-2 text-3xl sm:text-4xl">Productos</h2>
         </div>
+        <div class="flex gap-2">
+        <button type="button" id="sortBtn" class="btn btn-outline" aria-pressed="false">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16m0 0l-3-3m3 3l3-3M17 20V4m0 0l-3 3m3-3l3 3"/>
+          </svg>
+          <span>Ordenar</span>
+        </button>
         <button type="button" id="newBtn" class="btn btn-brand">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd"
@@ -80,6 +87,7 @@
           </svg>
           Nuevo producto
         </button>
+        </div>
       </div>
 
       <div class="mt-8">
@@ -199,6 +207,8 @@
 
     let products = [];
     let lastFocused = null;
+    let sorting = false; // modo "Ordenar": flechas en vez de editar/borrar
+    const sortBtn = $('sortBtn');
     let flavors = []; // sabores del producto que se está editando
 
     const flavorInput = $('flavorInput');
@@ -357,7 +367,7 @@
         return;
       }
 
-      list.innerHTML = filtered.map((p) => `
+      list.innerHTML = filtered.map((p, i) => `
         <li class="py-3 flex items-center gap-3">
           <span class="min-w-0 grow">
             <span class="block text-ink truncate">${esc(p.nombre)}</span>
@@ -366,7 +376,7 @@
               : ''}</span>
           </span>
           <span class="display tnum text-brand shrink-0">${esc(money.format(p.precio))}</span>
-          <span class="flex gap-1 shrink-0">
+          ${sorting ? sortControls(p, i, filtered.length) : `<span class="flex gap-1 shrink-0">
             <button type="button" data-action="edit" data-id="${esc(p.id)}"
               class="p-2 rounded text-ink-2 hover:text-brand hover:bg-crema-deep transition-colors"
               aria-label="Editar ${esc(p.nombre)}">
@@ -381,10 +391,79 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.9 12.1a2 2 0 01-2 1.9H7.9a2 2 0 01-2-1.9L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
             </button>
-          </span>
+          </span>`}
         </li>
       `).join('');
     }
+
+    /* --------------------------------------------------------------- Ordenar */
+
+    function sortControls(p, i, total) {
+      const arrow = (dir, d, disabled) => `
+        <button type="button" data-action="${dir}" data-id="${esc(p.id)}" ${disabled ? 'disabled' : ''}
+          class="p-2 rounded text-ink-2 hover:text-brand hover:bg-crema-deep transition-colors disabled:opacity-30 disabled:pointer-events-none"
+          aria-label="${dir === 'up' ? 'Subir' : 'Bajar'} ${esc(p.nombre)}">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="${d}"/>
+          </svg>
+        </button>`;
+      return `<span class="flex gap-1 shrink-0">
+        ${arrow('up', 'M5 15l7-7 7 7', i === 0)}
+        ${arrow('down', 'M19 9l-7 7-7-7', i === total - 1)}
+      </span>`;
+    }
+
+    function setSorting(on) {
+      sorting = on;
+      sortBtn.setAttribute('aria-pressed', String(on));
+      sortBtn.querySelector('span').textContent = on ? 'Listo' : 'Ordenar';
+      sortBtn.classList.toggle('btn-brand', on);
+      sortBtn.classList.toggle('btn-outline', !on);
+      $('newBtn').classList.toggle('hidden', on);
+      // Con un filtro activo, mover "uno arriba" sería ambiguo: se ordena la lista completa.
+      searchInput.value = '';
+      searchInput.disabled = on;
+      if (!on) saveOrder.flush();
+      render();
+    }
+
+    // Guarda el orden un ratito después del último movimiento, así varios
+    // clics seguidos son un solo pedido.
+    const saveOrder = (() => {
+      let timer = null;
+      const run = async () => {
+        timer = null;
+        try {
+          await send('PUT', '/products/order', { ids: products.map((p) => p.id) });
+          showStatus('Orden guardado.');
+        } catch (err) {
+          console.error(err);
+          showStatus(`No se pudo guardar el orden: ${err.message}`, false);
+        }
+      };
+      const schedule = () => { clearTimeout(timer); timer = setTimeout(run, 700); };
+      schedule.flush = () => { if (timer) { clearTimeout(timer); run(); } };
+      return schedule;
+    })();
+
+    function move(id, delta) {
+      const from = products.findIndex((p) => String(p.id) === String(id));
+      const to = from + delta;
+      if (from < 0 || to < 0 || to >= products.length) return;
+      const [item] = products.splice(from, 1);
+      products.splice(to, 0, item);
+      render();
+      saveOrder();
+
+      // Que el foco siga al producto movido (si llegó a un extremo, a la otra flecha).
+      const dir = delta < 0 ? 'up' : 'down';
+      const same = list.querySelector(`[data-action="${dir}"][data-id="${CSS.escape(String(id))}"]`);
+      const other = list.querySelector(`[data-action="${dir === 'up' ? 'down' : 'up'}"][data-id="${CSS.escape(String(id))}"]`);
+      (same && !same.disabled ? same : other)?.focus();
+    }
+
+    sortBtn.addEventListener('click', () => setSorting(!sorting));
+    window.addEventListener('beforeunload', () => saveOrder.flush());
 
     /* ------------------------------------------------------------------- API */
 
@@ -394,7 +473,7 @@
         const res = await fetch(`${API_URL}/products`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        products = data.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+        products = data; // ya vienen en el orden guardado
         render();
       } catch (err) {
         console.error(err);
@@ -512,6 +591,8 @@
       const { action, id } = btn.dataset;
 
       if (action === 'retry') return loadProducts();
+      if (action === 'up') return move(id, -1);
+      if (action === 'down') return move(id, 1);
 
       const product = products.find((p) => String(p.id) === String(id));
       if (!product) return;

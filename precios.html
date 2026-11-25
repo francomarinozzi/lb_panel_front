@@ -204,7 +204,8 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
-        allProducts = data.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+        // Ya vienen en el orden elegido en el admin.
+        allProducts = data;
 
         const latest = Math.max(...allProducts.map((p) => Date.parse(p.updatedAt) || 0));
         updatedLabel.textContent = latest ? `actualizada el ${longDate.format(latest)}` : '';
